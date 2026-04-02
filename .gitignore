@@ -1,0 +1,11 @@
+*.o
+*.obj
+*.exe
+*.dll
+*.a
+*.lib
+
+_ul*
+_repo_compare/
+
+src/**/*.verify.o
