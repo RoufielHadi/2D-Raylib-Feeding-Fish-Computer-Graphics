@@ -1,3 +1,12 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "menu_theme.h"
 
 #include "raylib.h"
@@ -25,6 +34,11 @@ static bool s_backgroundCacheReady = false;
 static int s_backgroundCacheWidth = 0;
 static int s_backgroundCacheHeight = 0;
 
+/* ======================
+Fungsi DrawBackgroundLayers
+=======================
+Fungsi ini digunakan untuk menggambar background layers.
+*/
 static void DrawBackgroundLayers(int w, int h) {
     for (int y = 0; y < h; y++) {
         float t = (float)y / (float)h;
@@ -59,6 +73,11 @@ static void DrawBackgroundLayers(int w, int h) {
     }
 }
 
+/* ======================
+Fungsi Menu_DrawLineOfText
+=======================
+Fungsi ini digunakan untuk mengelola draw line of text.
+*/
 static void Menu_DrawLineOfText(Font font, bool useFont, const char *text, Vector2 pos, float size, float spacing, Color color) {
     if (useFont) {
         DrawTextEx(font, text, pos, size, spacing, color);
@@ -67,6 +86,11 @@ static void Menu_DrawLineOfText(Font font, bool useFont, const char *text, Vecto
     }
 }
 
+/* ======================
+Fungsi Menu_MeasureLine
+=======================
+Fungsi ini digunakan untuk mengelola measure line.
+*/
 static Vector2 Menu_MeasureLine(Font font, bool useFont, const char *text, float size, float spacing) {
     if (useFont) {
         return MeasureTextEx(font, text, size, spacing);
@@ -74,8 +98,13 @@ static Vector2 Menu_MeasureLine(Font font, bool useFont, const char *text, float
     return (Vector2){(float)MeasureText(text, (int)size), size};
 }
 
+/* ======================
+Fungsi FlushWrappedLine
+=======================
+Fungsi ini digunakan untuk menjalankan proses FlushWrappedLine.
+*/
 static bool FlushWrappedLine(Font font, bool useFont, const char *line, float *y, Rectangle bounds,
-    float size, float spacing, Color color, bool draw) {
+    float size, float spacing, Color color, bool draw, bool centered) {
     float lineAdvance = size * 1.35f;
     float maxY = bounds.y + bounds.height;
 
@@ -88,14 +117,25 @@ static bool FlushWrappedLine(Font font, bool useFont, const char *line, float *y
     if (draw && *y + size > maxY) return false;
 
     if (draw) {
-        Menu_DrawLineOfText(font, useFont, line, (Vector2){bounds.x, *y}, size, spacing, color);
+        float x = bounds.x;
+        if (centered) {
+            float lineWidth = Menu_MeasureLine(font, useFont, line, size, spacing).x;
+            x = bounds.x + (bounds.width - lineWidth) * 0.5f;
+            if (x < bounds.x) x = bounds.x;
+        }
+        Menu_DrawLineOfText(font, useFont, line, (Vector2){x, *y}, size, spacing, color);
     }
     *y += lineAdvance;
     return true;
 }
 
+/* ======================
+Fungsi WrapTextInternal
+=======================
+Fungsi ini digunakan untuk menjalankan proses WrapTextInternal.
+*/
 static float WrapTextInternal(Font font, bool useFont, const char *text, Rectangle bounds,
-    float size, float spacing, Color color, bool draw) {
+    float size, float spacing, Color color, bool draw, bool centered) {
     char line[1024] = {0};
     char word[256] = {0};
     int lineLen = 0;
@@ -121,7 +161,7 @@ static float WrapTextInternal(Font font, bool useFont, const char *text, Rectang
             }
 
             if (Menu_MeasureLine(font, useFont, candidate, size, spacing).x > bounds.width && lineLen > 0) {
-                if (!FlushWrappedLine(font, useFont, line, &y, bounds, size, spacing, color, draw)) {
+                if (!FlushWrappedLine(font, useFont, line, &y, bounds, size, spacing, color, draw, centered)) {
                     break;
                 }
                 snprintf(line, sizeof(line), "%s", word);
@@ -136,7 +176,7 @@ static float WrapTextInternal(Font font, bool useFont, const char *text, Rectang
         }
 
         if (ch == '\n') {
-            if (!FlushWrappedLine(font, useFont, line, &y, bounds, size, spacing, color, draw)) {
+            if (!FlushWrappedLine(font, useFont, line, &y, bounds, size, spacing, color, draw, centered)) {
                 break;
             }
             line[0] = '\0';
@@ -147,16 +187,26 @@ static float WrapTextInternal(Font font, bool useFont, const char *text, Rectang
     }
 
     if (lineLen > 0) {
-        FlushWrappedLine(font, useFont, line, &y, bounds, size, spacing, color, draw);
+        FlushWrappedLine(font, useFont, line, &y, bounds, size, spacing, color, draw, centered);
     }
 
     return y - bounds.y;
 }
 
+/* ======================
+Fungsi Menu_GetPalette
+=======================
+Fungsi ini digunakan untuk mengelola get palette.
+*/
 MenuPalette Menu_GetPalette(void) {
     return s_palette;
 }
 
+/* ======================
+Fungsi EnsureMenuBackgroundCache
+=======================
+Fungsi ini digunakan untuk memastikan menu background cache.
+*/
 static void EnsureMenuBackgroundCache(void) {
     int w = GetScreenWidth();
     int h = GetScreenHeight();
@@ -177,6 +227,11 @@ static void EnsureMenuBackgroundCache(void) {
     }
 }
 
+/* ======================
+Fungsi Menu_DrawBackground
+=======================
+Fungsi ini digunakan untuk mengelola draw background.
+*/
 void Menu_DrawBackground(float time) {
     (void)time;
     EnsureMenuBackgroundCache();
@@ -185,30 +240,58 @@ void Menu_DrawBackground(float time) {
         (Vector2){0.0f, 0.0f}, WHITE);
 }
 
+/* ======================
+Fungsi Menu_DrawBackgroundDirect
+=======================
+Fungsi ini digunakan untuk mengelola draw background direct.
+*/
 void Menu_DrawBackgroundDirect(float time) {
     (void)time;
     DrawBackgroundLayers(GetScreenWidth(), GetScreenHeight());
 }
 
+/* ======================
+Fungsi Menu_DrawShell
+=======================
+Fungsi ini digunakan untuk mengelola draw shell.
+*/
 void Menu_DrawShell(Rectangle outer, Rectangle inner) {
     DrawRectangleRounded(outer, 0.02f, 6, ColorAlpha(BLACK, 0.28f));
     DrawRectangleRounded(inner, 0.02f, 6, s_palette.panel);
     DrawRectangleRoundedLinesEx(inner, 0.02f, 6, 2.0f, s_palette.panelStroke);
 }
 
+/* ======================
+Fungsi Menu_DrawPanel
+=======================
+Fungsi ini digunakan untuk mengelola draw panel.
+*/
 void Menu_DrawPanel(Rectangle rect, Color fill, Color stroke) {
     DrawRectangleRounded(rect, 0.02f, 6, fill);
     DrawRectangleRoundedLinesEx(rect, 0.02f, 6, 2.0f, stroke);
 }
 
+/* ======================
+Fungsi Menu_DrawInstructionBox
+=======================
+Fungsi ini digunakan untuk mengelola draw instruction box.
+*/
 void Menu_DrawInstructionBox(Rectangle rect, Font font, bool useFont, const char *text) {
     DrawRectangleRounded(rect, 0.18f, 10, ColorAlpha((Color){14, 60, 87, 255}, 0.74f));
     DrawRectangleRoundedLinesEx(rect, 0.18f, 10, 1.0f, ColorAlpha(s_palette.highlight, 0.22f));
-    Menu_DrawWrappedText(font, useFont, text,
-        (Rectangle){rect.x + 16, rect.y + 12, rect.width - 32, rect.height - 24},
-        14.0f, 1.0f, ColorAlpha(s_palette.highlight, 0.82f));
+    {
+        Rectangle textBounds = {rect.x + 16, rect.y + 8, rect.width - 32, rect.height - 16};
+        float textHeight = WrapTextInternal(font, useFont, text, textBounds, 14.0f, 1.0f, s_palette.highlight, false, true);
+        textBounds.y += (textBounds.height - textHeight) * 0.5f - 1.0f;
+        WrapTextInternal(font, useFont, text, textBounds, 14.0f, 1.0f, ColorAlpha(s_palette.highlight, 0.82f), true, true);
+    }
 }
 
+/* ======================
+Fungsi Menu_DrawButton
+=======================
+Fungsi ini digunakan untuk mengelola draw button.
+*/
 void Menu_DrawButton(MenuButton button, Font font, bool useFont, bool selected) {
     bool hovered = CheckCollisionPointRec(GetMousePosition(), button.bounds);
     Color fill = selected || hovered ? s_palette.accent : s_palette.panelStrong;
@@ -230,26 +313,56 @@ void Menu_DrawButton(MenuButton button, Font font, bool useFont, bool selected) 
         28.0f, 1.0f, text);
 }
 
+/* ======================
+Fungsi Menu_ButtonPressed
+=======================
+Fungsi ini digunakan untuk mengelola button pressed.
+*/
 bool Menu_ButtonPressed(MenuButton button) {
     return IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), button.bounds);
 }
 
+/* ======================
+Fungsi Menu_DrawText
+=======================
+Fungsi ini digunakan untuk mengelola draw text.
+*/
 void Menu_DrawText(Font font, bool useFont, const char *text, Vector2 pos, float size, float spacing, Color color) {
     Menu_DrawLineOfText(font, useFont, text, pos, size, spacing, color);
 }
 
+/* ======================
+Fungsi Menu_MeasureText
+=======================
+Fungsi ini digunakan untuk mengelola measure text.
+*/
 Vector2 Menu_MeasureText(Font font, bool useFont, const char *text, float size, float spacing) {
     return Menu_MeasureLine(font, useFont, text, size, spacing);
 }
 
+/* ======================
+Fungsi Menu_DrawWrappedText
+=======================
+Fungsi ini digunakan untuk mengelola draw wrapped text.
+*/
 void Menu_DrawWrappedText(Font font, bool useFont, const char *text, Rectangle bounds, float size, float spacing, Color color) {
-    WrapTextInternal(font, useFont, text, bounds, size, spacing, color, true);
+    WrapTextInternal(font, useFont, text, bounds, size, spacing, color, true, false);
 }
 
+/* ======================
+Fungsi Menu_MeasureWrappedText
+=======================
+Fungsi ini digunakan untuk mengelola measure wrapped text.
+*/
 float Menu_MeasureWrappedText(Font font, bool useFont, const char *text, float size, float spacing, float maxWidth) {
-    return WrapTextInternal(font, useFont, text, (Rectangle){0, 0, maxWidth, 10000}, size, spacing, s_palette.text, false);
+    return WrapTextInternal(font, useFont, text, (Rectangle){0, 0, maxWidth, 10000}, size, spacing, s_palette.text, false, false);
 }
 
+/* ======================
+Fungsi Menu_DrawScrollBar
+=======================
+Fungsi ini digunakan untuk mengelola draw scroll bar.
+*/
 void Menu_DrawScrollBar(Rectangle track, float viewportHeight, float contentHeight, float scrollOffset) {
     DrawRectangleRounded(track, 0.5f, 8, ColorAlpha((Color){31, 78, 98, 255}, 0.35f));
     DrawRectangleRoundedLinesEx(track, 0.5f, 8, 1.0f, ColorAlpha(s_palette.highlight, 0.5f));

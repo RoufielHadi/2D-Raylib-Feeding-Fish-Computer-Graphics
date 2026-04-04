@@ -1,11 +1,20 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "menu_content.h"
 
 #include "menu_theme.h"
 #include "../entities/bubble.h"
-#include "../entities/carnivore.h"
+#include "../entities/lele.h"
 #include "../entities/food.h"
-#include "../entities/guppy.h"
-#include "../entities/ultravore.h"
+#include "../entities/cere.h"
+#include "../entities/toman.h"
 #include "../render/draw_bubble.h"
 #include "../render/draw_env.h"
 #include "../render/draw_fish.h"
@@ -45,29 +54,29 @@ typedef struct {
 } ShowcaseInfo;
 
 static const ShowcaseInfo kShowcases[] = {
-    {SHOWCASE_GUPPY, "Ikan Guppy",
-        "Ikan utama yang paling sering dipelihara pemain. Siluetnya dibuat kecil, oval, dan ringan dengan badan ellipse, perut terang, ekor kipas merah muda, serta satu sirip atas yang menyatu ke badan.",
-        {{"Badan", "Ellipse oranye yang lebih lonjong untuk tubuh utama guppy."},
-         {"Perut", "Ellipse terang kecil di bagian bawah depan agar badan terasa bulat."},
-         {"Ekor", "Ekor kipas dua sisi dengan warna merah muda agar mirip referensi."},
-         {"Sirip", "Sirip atas dan sirip bawah kecil, tanpa segitiga sisa di tengah badan."},
-         {"Mata", "Circle putih, pupil hitam, dan highlight putih kecil."}}, 5},
-    {SHOWCASE_CARNIVORE, "Ikan Carnivore",
-        "Predator tahap menengah dengan badan bulat, punggung gelap, perut merah, garis zigzag di sisi badan, dan mulut kecil bergigi agar terlihat seperti piranha pada referensi.",
-        {{"Badan", "Ellipse besar gelap dengan bentuk lebih bulat dan padat."},
-         {"Perut", "Ellipse merah di bawah badan untuk kontras khas predator."},
-         {"Ekor", "Ekor lebar di belakang sebagai pendorong utama renang."},
-         {"Sirip", "Sirip punggung dan sirip bawah kecil untuk siluet piranha."},
-         {"Mulut + Gigi", "Mulut pendek dengan gigi kecil di depan, bukan bekas gigi di badan."},
-         {"Mata", "Circle kuning dengan pupil gelap untuk ekspresi galak."}}, 6},
-    {SHOWCASE_ULTRAVORE, "Ikan Ultravore",
-        "Predator terbesar di Feeding Fish. Bentuknya dibuat lebih memanjang dengan kepala besar, rahang terbuka, lapisan shading, dan ekor lebar. Visual ini sengaja tanpa sirip atas agar sesuai referensi terbaru.",
-        {{"Badan", "Ellipse besar memanjang untuk massa tubuh utama ultravore."},
-         {"Shading", "Lapisan ellipse belakang memberi volume dan kedalaman."},
-         {"Ekor", "Ekor belakang besar dan lebar untuk tenaga dorong kuat."},
-         {"Sirip", "Hanya sirip bawah yang dibuat tebal; tidak ada sirip atas."},
-         {"Mulut + Gigi", "Rahang besar terbuka dengan gigi predator sebagai fokus utama."},
-         {"Mata", "Circle merah sebagai identitas ultravore."}}, 6},
+    {SHOWCASE_GUPPY, "Ikan Cere",
+        "Ikan cere dibuat sebagai spesies terkecil di aquarium: tubuhnya ramping memanjang, kepala kecil, punggung zaitun, perut terang, garis badan halus, dan ekor tipis agar lebih dekat ke ikan cere asli.",
+        {{"Badan Ramping", "Tubuh dibentuk dari rangkaian circle yang mengikuti sumbu badan agar tidak tampak oval polos."},
+         {"Perut", "Lapisan body bawah dibuat lebih terang untuk memberi siluet ikan kecil yang ringan."},
+         {"Ekor Tipis", "Ekor belakang dibentuk dari web segitiga dan circle ujung agar terasa menyatu."},
+         {"Sirip", "Sirip atas dan sirip perut kecil dibuat dengan garis dan ray tipis."},
+         {"Mata + Mulut", "Mata bulat kecil dan garis mulut pendek menjaga proporsi ikan cere."}}, 5},
+    {SHOWCASE_CARNIVORE, "Ikan Lele",
+        "Ikan lele tampil lebih besar dari cere, dengan kepala lebar, tubuh licin memanjang, sirip bawah panjang, dan kumis khas. Siluetnya dibuat organik agar langsung terbaca sebagai lele air tawar Indonesia.",
+        {{"Kepala", "Bagian depan dibuat besar dan tumpul untuk memberi kesan kepala lele."},
+         {"Tubuh", "Badan memanjang dibangun dari chain circle sehingga volume tidak lagi kaku."},
+         {"Sirip", "Sirip punggung rendah dan sirip bawah panjang dibuat dengan DDA thick line."},
+         {"Ekor", "Ekor belakang dibulatkan supaya terlihat lebih alami."},
+         {"Kumis", "Empat sungut dibuat dari garis DDA sebagai ciri paling khas lele."},
+         {"Mata", "Mata kecil pucat menyesuaikan karakter ikan dasar."}}, 6},
+    {SHOWCASE_ULTRAVORE, "Ikan Toman",
+        "Ikan toman dibuat paling besar dan paling dominan sebagai toman jumbo, dengan badan panjang tebal, rahang besar, sirip punggung dan anal memanjang, serta corak sisi badan yang lebih liar seperti snakehead asli.",
+        {{"Kepala", "Kepala depan dibuat besar dengan rahang atas-bawah yang jelas."},
+         {"Tubuh Panjang", "Volume badan dibangun memanjang dengan chain circle untuk efek snakehead."},
+         {"Sirip Panjang", "Sirip punggung dan sirip anal dibentuk dari thick line agar menyambung sepanjang badan."},
+         {"Ekor", "Ekor membulat lebar memberi tenaga dorong predator besar."},
+         {"Corak", "Garis hangat dan strip miring dipakai sebagai aksen tubuh toman."},
+         {"Mata", "Mata merah tetap dipakai agar toman besar terasa dominan."}}, 6},
     {SHOWCASE_FOOD, "Makanan Ikan",
         "Pakan dijatuhkan pemain dengan klik kiri. Bentuknya dibuat dari dua setengah kapsul, lingkaran ujung, dan garis tengah sehingga terlihat seperti pellet dua warna.",
         {{"Kapsul Kiri", "Dua triangle membentuk bagian putih makanan."},
@@ -105,18 +114,20 @@ static const ShowcaseInfo kShowcases[] = {
          {"Gelombang", "Rectangle strip dengan tinggi berbeda."},
          {"Butiran", "Circle kecil transparan sebagai detail tekstur."}}, 3},
     {SHOWCASE_BACKGROUND, "Latar Air",
-        "Latar belakang aquarium memakai gradient vertikal biru dan cahaya lembut di bagian atas. Komposisi ini menjaga nuansa bawah laut tanpa memakai gambar bitmap.",
-        {{"Gradient", "Rangkaian line horizontal dari biru gelap ke terang."},
-         {"Glow", "Ellipse transparan horizontal sebagai kilau permukaan."},
-         {"Atmosfer", "Layer warna tambahan untuk kedalaman air."}}, 3}
+        "Latar belakang aquarium kini memakai gradasi vertikal dan glow lembut dari fungsi bawaan raylib, sehingga transisinya terasa lebih natural tanpa bitmap.",
+        {{"Gradient", "DrawRectangleGradientV dipakai untuk menyatukan warna permukaan dan kedalaman air."},
+         {"Glow", "DrawCircleGradient memberi semburat cahaya lembut di area atas air."},
+         {"Atmosfer", "Layer gradien tambahan dipakai untuk memberi kedalaman warna yang halus."}}, 3}
 };
 
 static const int kShowcaseCount = (int)(sizeof(kShowcases) / sizeof(kShowcases[0]));
-static const float kIntroHeight = 336.0f;
-static const float kCardHeight = 418.0f;
-static const float kCardGap = 24.0f;
 static const Color kSectionFill = {255, 255, 255, 209};
 static const Color kSectionInner = {244, 248, 250, 244};
+static const float kGuideIntroHeight = 176.0f;
+static const float kGuideNavHeight = 136.0f;
+static const float kGuideDetailHeight = 764.0f;
+static const float kGuideContentHeight = 1120.0f;
+static int s_selectedShowcase = 0;
 
 #define DrawLine Prim_DrawLine
 #define DrawLineEx Prim_DrawLineEx
@@ -132,6 +143,64 @@ static const Color kSectionInner = {244, 248, 250, 244};
 #define DrawRectangleRoundedLinesEx Prim_DrawRectangleRoundedLinesEx
 #define DrawRectangleGradientV Prim_DrawRectangleGradientV
 
+/* ======================
+Fungsi DrawGuideFoodPellet
+=======================
+Fungsi ini digunakan untuk menggambar guide food pellet.
+*/
+static void DrawGuideFoodPellet(Vector2 center, float scale, float rotationDeg) {
+    float c = cosf(rotationDeg * DEG2RAD);
+    float s = sinf(rotationDeg * DEG2RAD);
+    float halfW = 18.0f * scale;
+    float halfH = 9.0f * scale;
+
+    Vector2 corners[4] = {
+        {-halfW, -halfH},
+        { halfW, -halfH},
+        { halfW,  halfH},
+        {-halfW,  halfH}
+    };
+
+    for (int i = 0; i < 4; i++) {
+        float x = corners[i].x;
+        float y = corners[i].y;
+        corners[i].x = center.x + x * c - y * s;
+        corners[i].y = center.y + x * s + y * c;
+    }
+
+    Vector2 midTop = {(corners[0].x + corners[1].x) * 0.5f, (corners[0].y + corners[1].y) * 0.5f};
+    Vector2 midBottom = {(corners[3].x + corners[2].x) * 0.5f, (corners[3].y + corners[2].y) * 0.5f};
+    Vector2 leftCap = {(corners[0].x + corners[3].x) * 0.5f, (corners[0].y + corners[3].y) * 0.5f};
+    Vector2 rightCap = {(corners[1].x + corners[2].x) * 0.5f, (corners[1].y + corners[2].y) * 0.5f};
+
+    DrawTriangle(corners[0], midTop, midBottom, (Color){252, 249, 245, 255});
+    DrawTriangle(corners[0], midBottom, corners[3], (Color){252, 249, 245, 255});
+    DrawTriangle(midTop, corners[1], corners[2], (Color){206, 44, 44, 255});
+    DrawTriangle(midTop, corners[2], midBottom, (Color){206, 44, 44, 255});
+    DrawCircleV(leftCap, halfH, (Color){252, 249, 245, 255});
+    DrawCircleV(rightCap, halfH, (Color){206, 44, 44, 255});
+    DrawLineEx(midTop, midBottom, 2.0f * scale, ColorAlpha((Color){87, 94, 108, 255}, 0.80f));
+    DrawLineEx(corners[0], corners[1], 1.4f * scale, ColorAlpha((Color){62, 68, 80, 255}, 0.55f));
+    DrawLineEx(corners[3], corners[2], 1.4f * scale, ColorAlpha((Color){62, 68, 80, 255}, 0.55f));
+}
+
+/* ======================
+Fungsi DrawGuideBubblePreview
+=======================
+Fungsi ini digunakan untuk menggambar guide bubble preview.
+*/
+static void DrawGuideBubblePreview(Vector2 center, float radius, unsigned char alpha) {
+    DrawCircleV(center, radius, (Color){180, 220, 255, alpha});
+    DrawCircleLines((int)center.x, (int)center.y, radius, (Color){239, 249, 255, alpha});
+    DrawCircleLines((int)center.x, (int)center.y, radius - 4.0f, (Color){150, 212, 245, (unsigned char)(alpha * 0.75f)});
+    DrawCircleV((Vector2){center.x - radius * 0.26f, center.y - radius * 0.24f}, radius * 0.20f, ColorAlpha(WHITE, 0.92f));
+}
+
+/* ======================
+Fungsi DrawPartPreview
+=======================
+Fungsi ini digunakan untuk menggambar part preview.
+*/
 static void DrawPartPreview(Rectangle box, ShowcaseType type, int index) {
     MenuPalette palette = Menu_GetPalette();
     Color ink = (Color){29, 66, 86, 255};
@@ -142,82 +211,102 @@ static void DrawPartPreview(Rectangle box, ShowcaseType type, int index) {
     DrawRectangleRoundedLinesEx(box, 0.12f, 6, 1.0f, ColorAlpha(ink, 0.32f));
 
     if (type == SHOWCASE_GUPPY) {
-        if (index == 0) DrawEllipse((int)center.x + 4, (int)center.y, 36, 19, (Color){255, 170, 60, 255});
-        if (index == 1) DrawEllipse((int)center.x + 12, (int)center.y + 5, 22, 9, (Color){255, 221, 136, 255});
+        if (index == 0) {
+            DrawCircle((int)(center.x - 10), (int)center.y, 10, (Color){186, 192, 150, 255});
+            DrawCircle((int)center.x, (int)center.y, 9, (Color){186, 192, 150, 255});
+            DrawCircle((int)(center.x + 10), (int)center.y - 1, 8, (Color){186, 192, 150, 255});
+        }
+        if (index == 1) {
+            DrawCircle((int)(center.x + 8), (int)(center.y + 4), 6, (Color){233, 227, 183, 255});
+            DrawCircle((int)(center.x - 2), (int)(center.y + 4), 5, (Color){233, 227, 183, 255});
+        }
         if (index == 2) {
-            DrawTriangle((Vector2){center.x - 2, center.y}, (Vector2){center.x - 42, center.y - 24}, (Vector2){center.x - 24, center.y - 2}, (Color){255, 81, 136, 255});
-            DrawTriangle((Vector2){center.x - 2, center.y}, (Vector2){center.x - 24, center.y + 2}, (Vector2){center.x - 42, center.y + 24}, (Color){255, 81, 136, 255});
+            DrawTriangle((Vector2){center.x - 8, center.y}, (Vector2){center.x - 34, center.y - 16}, (Vector2){center.x - 28, center.y + 2}, (Color){241, 197, 112, 255});
+            DrawTriangle((Vector2){center.x - 8, center.y}, (Vector2){center.x - 28, center.y - 2}, (Vector2){center.x - 34, center.y + 16}, (Color){241, 197, 112, 255});
+            DrawCircle((int)(center.x - 38), (int)center.y, 5, (Color){241, 197, 112, 255});
         }
         if (index == 3) {
-            DrawTriangle((Vector2){center.x + 6, center.y - 7}, (Vector2){center.x + 18, center.y - 24}, (Vector2){center.x + 28, center.y - 6}, (Color){255, 81, 136, 220});
-            DrawTriangle((Vector2){center.x + 2, center.y + 6}, (Vector2){center.x + 16, center.y + 20}, (Vector2){center.x + 22, center.y + 4}, (Color){255, 81, 136, 210});
+            DrawTriangle((Vector2){center.x - 6, center.y - 5}, (Vector2){center.x + 8, center.y - 20}, (Vector2){center.x + 18, center.y - 4}, (Color){241, 197, 112, 220});
+            DrawTriangle((Vector2){center.x - 5, center.y + 4}, (Vector2){center.x + 10, center.y + 18}, (Vector2){center.x + 16, center.y + 3}, (Color){241, 197, 112, 210});
         }
         if (index == 4) {
-            DrawCircleV(center, 9.0f, WHITE);
-            DrawCircleV((Vector2){center.x + 2.0f, center.y}, 4.0f, BLACK);
-            DrawCircleV((Vector2){center.x + 4.0f, center.y - 2.0f}, 1.6f, WHITE);
+            DrawCircleV(center, 7.0f, WHITE);
+            DrawCircleV((Vector2){center.x + 2.0f, center.y}, 3.4f, BLACK);
+            DrawCircleV((Vector2){center.x + 3.0f, center.y - 2.0f}, 1.3f, WHITE);
+            DrawLineEx((Vector2){center.x + 10.0f, center.y + 2.0f}, (Vector2){center.x + 18.0f, center.y + 1.0f}, 1.2f, ink);
         }
     } else if (type == SHOWCASE_CARNIVORE) {
-        if (index == 0) DrawEllipse((int)center.x - 2, (int)center.y, 38, 24, (Color){110, 120, 130, 255});
-        if (index == 1) DrawEllipse((int)center.x + 2, (int)center.y + 9, 29, 11, (Color){210, 60, 50, 255});
-        if (index == 2) DrawTriangle((Vector2){center.x - 8, center.y}, (Vector2){center.x - 40, center.y - 25}, (Vector2){center.x - 37, center.y + 25}, (Color){110, 120, 130, 255});
+        if (index == 0) {
+            DrawCircle((int)(center.x - 12), (int)center.y, 12, (Color){76, 86, 84, 255});
+            DrawCircle((int)center.x, (int)center.y, 10, (Color){76, 86, 84, 255});
+            DrawCircle((int)(center.x + 12), (int)(center.y - 1), 9, (Color){76, 86, 84, 255});
+            DrawCircle((int)(center.x + 24), (int)(center.y - 1), 10, (Color){76, 86, 84, 255});
+        }
+        if (index == 1) {
+            DrawCircle((int)(center.x - 4), (int)(center.y + 5), 8, (Color){140, 151, 126, 255});
+            DrawCircle((int)(center.x + 10), (int)(center.y + 5), 7, (Color){140, 151, 126, 255});
+        }
+        if (index == 2) {
+            DrawLineEx((Vector2){center.x - 18, center.y + 8}, (Vector2){center.x - 40, center.y + 12}, 8.0f, (Color){78, 98, 72, 255});
+            DrawLineEx((Vector2){center.x - 18, center.y + 8}, (Vector2){center.x - 40, center.y + 12}, 1.5f, (Color){38, 48, 49, 255});
+        }
         if (index == 3) {
-            DrawTriangle((Vector2){center.x - 2, center.y - 14}, (Vector2){center.x + 10, center.y - 34}, (Vector2){center.x + 24, center.y - 8}, (Color){70, 80, 90, 255});
-            DrawEllipse((int)center.x + 4, (int)center.y + 18, 12, 6, (Color){70, 80, 90, 220});
+            DrawTriangle((Vector2){center.x - 10, center.y - 7}, (Vector2){center.x + 6, center.y - 24}, (Vector2){center.x + 16, center.y - 6}, (Color){78, 98, 72, 255});
+            DrawLineEx((Vector2){center.x - 8, center.y + 11}, (Vector2){center.x - 34, center.y + 15}, 7.0f, (Color){78, 98, 72, 220});
         }
         if (index == 4) {
-            Vector2 zigzag[8] = {
-                {center.x + 18, center.y - 2}, {center.x + 10, center.y + 8}, {center.x + 2, center.y},
-                {center.x - 6, center.y + 8}, {center.x - 14, center.y + 2}, {center.x - 22, center.y + 10},
-                {center.x - 30, center.y + 4}, {center.x - 36, center.y + 8}
-            };
-            for (int i = 0; i < 7; i++) {
-                DrawLineEx(zigzag[i], zigzag[i + 1], 2.0f, (Color){28, 30, 32, 255});
-            }
-            for (int t = 0; t < 4; t++) {
-                float x = center.x + 10 + t * 5;
-                DrawTriangle((Vector2){x, center.y - 8}, (Vector2){x + 4, center.y + 2}, (Vector2){x + 8, center.y - 8}, palette.highlight);
-            }
+            DrawLineEx((Vector2){center.x + 10, center.y}, (Vector2){center.x + 30, center.y - 12}, 1.6f, ink);
+            DrawLineEx((Vector2){center.x + 10, center.y}, (Vector2){center.x + 32, center.y - 2}, 1.6f, ink);
+            DrawLineEx((Vector2){center.x + 10, center.y}, (Vector2){center.x + 30, center.y + 10}, 1.6f, ink);
+            DrawLineEx((Vector2){center.x + 5, center.y + 4}, (Vector2){center.x + 26, center.y + 15}, 1.5f, ink);
         }
         if (index == 5) {
-            DrawCircleV(center, 9.0f, (Color){250, 220, 90, 255});
-            DrawCircleV((Vector2){center.x + 2.0f, center.y}, 4.0f, BLACK);
-            DrawCircleV((Vector2){center.x + 4.0f, center.y - 2.0f}, 1.6f, WHITE);
+            DrawCircleV(center, 6.8f, (Color){235, 232, 210, 255});
+            DrawCircleV((Vector2){center.x + 1.8f, center.y}, 3.1f, BLACK);
+            DrawCircleV((Vector2){center.x + 3.0f, center.y - 2.0f}, 1.2f, WHITE);
         }
     } else if (type == SHOWCASE_ULTRAVORE) {
-        if (index == 0) DrawEllipse((int)center.x - 6, (int)center.y, 46, 24, (Color){180, 200, 210, 255});
-        if (index == 1) DrawEllipse((int)center.x - 18, (int)center.y - 5, 30, 15, (Color){110, 130, 145, 220});
+        if (index == 0) {
+            DrawCircle((int)(center.x - 18), (int)center.y, 12, (Color){66, 86, 74, 255});
+            DrawCircle((int)(center.x - 2), (int)center.y, 11, (Color){66, 86, 74, 255});
+            DrawCircle((int)(center.x + 14), (int)(center.y - 1), 10, (Color){66, 86, 74, 255});
+            DrawCircle((int)(center.x + 28), (int)(center.y - 2), 10, (Color){66, 86, 74, 255});
+        }
+        if (index == 1) {
+            DrawCircle((int)(center.x - 4), (int)(center.y - 8), 7, (Color){34, 48, 42, 220});
+            DrawCircle((int)(center.x - 18), (int)(center.y - 8), 6, (Color){34, 48, 42, 220});
+        }
         if (index == 2) {
-            DrawTriangle((Vector2){center.x - 12, center.y}, (Vector2){center.x - 44, center.y - 26}, (Vector2){center.x - 38, center.y + 28}, (Color){220, 140, 80, 255});
+            DrawCircle((int)(center.x - 38), (int)center.y, 7, (Color){207, 88, 48, 255});
+            DrawTriangle((Vector2){center.x - 18, center.y}, (Vector2){center.x - 42, center.y - 18}, (Vector2){center.x - 42, center.y + 18}, (Color){207, 88, 48, 255});
         }
         if (index == 3) {
-            DrawTriangle((Vector2){center.x - 4, center.y + 10}, (Vector2){center.x + 12, center.y + 30}, (Vector2){center.x + 28, center.y + 8}, (Color){110, 130, 145, 220});
-            DrawLineEx((Vector2){center.x - 12, center.y - 20}, (Vector2){center.x + 12, center.y - 16}, 2.0f, ColorAlpha((Color){110, 130, 145, 255}, 0.35f));
+            DrawLineEx((Vector2){center.x + 8, center.y - 14}, (Vector2){center.x - 28, center.y - 18}, 8.0f, (Color){207, 88, 48, 220});
+            DrawLineEx((Vector2){center.x + 8, center.y + 12}, (Vector2){center.x - 28, center.y + 16}, 7.0f, (Color){207, 88, 48, 190});
         }
         if (index == 4) {
-            DrawTriangle((Vector2){center.x + 2, center.y - 14}, (Vector2){center.x + 30, center.y + 2}, (Vector2){center.x + 2, center.y + 16}, (Color){180, 200, 210, 255});
             for (int t = 0; t < 4; t++) {
-                float x = center.x + 8 + t * 5;
-                DrawTriangle((Vector2){x, center.y - 9}, (Vector2){x + 4, center.y + 2}, (Vector2){x + 8, center.y - 9}, palette.highlight);
+                DrawLineEx((Vector2){center.x + 10 - t * 10.0f, center.y - 3.0f}, (Vector2){center.x - t * 10.0f, center.y + 8.0f}, 1.5f, (Color){217, 137, 76, 255});
             }
+            DrawLineEx((Vector2){center.x + 6.0f, center.y - 2.0f}, (Vector2){center.x - 32.0f, center.y}, 2.0f, (Color){209, 116, 66, 255});
         }
         if (index == 5) {
-            DrawCircleV(center, 9.0f, (Color){220, 40, 40, 255});
-            DrawCircleV((Vector2){center.x + 2.0f, center.y}, 4.0f, BLACK);
-            DrawCircleV((Vector2){center.x + 4.0f, center.y - 2.0f}, 1.6f, WHITE);
+            DrawCircleV(center, 7.2f, (Color){226, 74, 58, 255});
+            DrawCircleV((Vector2){center.x + 2.0f, center.y}, 3.3f, BLACK);
+            DrawCircleV((Vector2){center.x + 3.4f, center.y - 2.0f}, 1.3f, WHITE);
         }
     } else if (type == SHOWCASE_FOOD) {
-        if (index == 0) DrawRectangleRounded((Rectangle){center.x - 32, center.y - 10, 34, 20}, 0.9f, 8, (Color){252, 249, 245, 255});
-        if (index == 1) DrawRectangleRounded((Rectangle){center.x - 2, center.y - 10, 34, 20}, 0.9f, 8, (Color){206, 44, 44, 255});
+        if (index == 0) DrawGuideFoodPellet((Vector2){center.x - 8.0f, center.y + 2.0f}, 0.80f, -8.0f);
+        if (index == 1) DrawGuideFoodPellet((Vector2){center.x + 10.0f, center.y - 2.0f}, 0.80f, 8.0f);
         if (index == 2) {
-            DrawCircle((int)(center.x - 24), (int)center.y, 10, (Color){252, 249, 245, 255});
-            DrawCircle((int)(center.x + 24), (int)center.y, 10, (Color){206, 44, 44, 255});
+            DrawCircle((int)(center.x - 22), (int)center.y, 8, (Color){252, 249, 245, 255});
+            DrawCircle((int)(center.x + 22), (int)center.y, 8, (Color){206, 44, 44, 255});
         }
         if (index == 3) DrawLineEx((Vector2){center.x, center.y - 12}, (Vector2){center.x, center.y + 12}, 2.0f, soft);
-        if (index == 4) DrawRectangleRoundedLines((Rectangle){center.x - 32, center.y - 10, 64, 20}, 0.9f, 8, ink);
+        if (index == 4) DrawRectangleRoundedLines((Rectangle){center.x - 28, center.y - 10, 56, 20}, 0.9f, 8, ink);
     } else if (type == SHOWCASE_BUBBLE) {
         if (index <= 2) {
-            DrawCircle((int)center.x, (int)center.y, 20, (Color){180, 220, 255, index == 0 ? 120 : 0});
+            if (index == 0) DrawGuideBubblePreview(center, 20.0f, 132);
             if (index == 1) DrawCircleLines((int)center.x, (int)center.y, 20, soft);
             if (index == 2) DrawCircle((int)center.x - 6, (int)center.y - 6, 6, palette.highlight);
         }
@@ -258,82 +347,99 @@ static void DrawPartPreview(Rectangle box, ShowcaseType type, int index) {
             for (int t = 0; t < 10; t++) DrawCircle((int)(box.x + 14 + t * 11), (int)(center.y + 4 + (t % 3)), 1.6f, (Color){242, 220, 150, 170});
         }
     } else if (type == SHOWCASE_BACKGROUND) {
-        if (index == 0) DrawRectangleGradientV((int)(box.x + 10), (int)(box.y + 10), (int)(box.width - 20), (int)(box.height - 20), (Color){18, 78, 148, 255}, (Color){70, 170, 218, 255});
-        if (index == 1) {
-            for (int t = 0; t < 3; t++) DrawEllipse((int)center.x, (int)(center.y - 18 + t * 10), 38, 6, ColorAlpha(WHITE, 0.18f));
+        Rectangle inner = {box.x + 10.0f, box.y + 10.0f, box.width - 20.0f, box.height - 20.0f};
+        DrawWaterBackgroundRect(inner);
+        if (index == 0) {
+            DrawRectangleGradientV((int)inner.x, (int)inner.y, (int)inner.width, (int)(inner.height * 0.22f), ColorAlpha(WHITE, 0.18f), BLANK);
         }
-        if (index == 2) DrawRectangleGradientV((int)(box.x + 14), (int)(box.y + 14), (int)(box.width - 28), (int)(box.height - 28), ColorAlpha((Color){255, 255, 255, 25}, 0.35f), BLANK);
+        if (index == 1) {
+            for (int t = 0; t < 3; t++) {
+                DrawRectangleGradientV((int)(inner.x + 22 + t * 26), (int)(inner.y + 8), 14, (int)(inner.height * 0.62f), ColorAlpha(WHITE, 0.10f), BLANK);
+            }
+        }
+        if (index == 2) {
+            DrawRectangleGradientV((int)inner.x, (int)(inner.y + inner.height * 0.82f), (int)inner.width, (int)(inner.height * 0.18f),
+                (Color){205, 182, 118, 255}, (Color){161, 133, 84, 255});
+        }
     }
 }
 
+/* ======================
+Fungsi DrawMiniAquariumDecor
+=======================
+Fungsi ini digunakan untuk menggambar mini aquarium decor.
+*/
+static void DrawMiniAquariumDecor(Rectangle area) {
+    Vector2 coral = {area.x + area.width * 0.16f, area.y + area.height * 0.82f};
+    DrawEllipse((int)coral.x, (int)coral.y, 22, 14, (Color){109, 90, 140, 255});
+    DrawEllipse((int)(coral.x - 3), (int)(coral.y + 2), 16, 10, (Color){79, 62, 112, 255});
+
+    for (int i = 0; i < 3; i++) {
+        float x = area.x + area.width * (0.72f + i * 0.05f);
+        Vector2 start = {x, area.y + area.height * 0.88f};
+        Vector2 end = {x + (i - 1) * 5.0f, area.y + area.height * (0.48f - i * 0.02f)};
+        DrawLineBezier(start, end, 4.0f - i * 0.6f, (Color){44, 140, 102, 230});
+    }
+}
+
+/* ======================
+Fungsi DrawShowcasePreview
+=======================
+Fungsi ini digunakan untuk menggambar showcase preview.
+*/
 static void DrawShowcasePreview(Rectangle area, ShowcaseType type, float time) {
+    (void)time;
     DrawRectangleRounded(area, 0.08f, 8, ColorAlpha(WHITE, 0.8f));
     DrawRectangleRoundedLinesEx(area, 0.08f, 8, 1.5f, ColorAlpha((Color){34, 88, 110, 255}, 0.45f));
+    Rectangle scene = {area.x + 8.0f, area.y + 8.0f, area.width - 16.0f, area.height - 16.0f};
+    DrawWaterBackgroundRect(scene);
 
     if (type == SHOWCASE_GUPPY) {
         Guppy guppy = {0};
         guppy.active = true;
-        guppy.scale = 1.25f;
+        guppy.scale = 0.98f;
         guppy.dir = 1.0f;
-        guppy.tailSwing = sinf(time * 2.6f) * 3.0f;
-        guppy.finSwing = sinf(time * 3.0f) * 2.0f;
-        guppy.pos = (Vector2){area.x + area.width * 0.5f, area.y + area.height * 0.56f};
-        DrawGuppy(&guppy, time);
+        guppy.pos = (Vector2){scene.x + scene.width * 0.55f, scene.y + scene.height * 0.56f};
+        DrawGuppyPreview(&guppy, 0.0f);
     } else if (type == SHOWCASE_CARNIVORE) {
         Carnivore carnivore = {0};
         carnivore.active = true;
-        carnivore.scale = 1.2f;
+        carnivore.scale = 1.18f;
         carnivore.dir = 1.0f;
-        carnivore.tailSwing = sinf(time * 2.2f) * 4.0f;
-        carnivore.finSwing = sinf(time * 3.0f) * 2.0f;
-        carnivore.pos = (Vector2){area.x + area.width * 0.5f, area.y + area.height * 0.56f};
-        DrawPiranha(&carnivore, time);
+        carnivore.pos = (Vector2){scene.x + scene.width * 0.52f, scene.y + scene.height * 0.58f};
+        DrawPiranhaPreview(&carnivore, 0.0f);
     } else if (type == SHOWCASE_ULTRAVORE) {
         Ultravore ultravore = {0};
         ultravore.active = true;
-        ultravore.scale = 0.92f;
+        ultravore.scale = 1.40f;
         ultravore.dir = 1.0f;
-        ultravore.tailSwing = sinf(time * 2.0f) * 4.0f;
-        ultravore.finSwing = sinf(time * 2.8f) * 2.0f;
-        ultravore.pos = (Vector2){area.x + area.width * 0.48f, area.y + area.height * 0.58f};
-        DrawUltravore(&ultravore, time);
+        ultravore.pos = (Vector2){scene.x + scene.width * 0.46f, scene.y + scene.height * 0.61f};
+        DrawUltravorePreview(&ultravore, 0.0f);
     } else if (type == SHOWCASE_FOOD) {
-        Food food = {0};
-        food.active = true;
-        food.pos = (Vector2){area.x + area.width * 0.5f, area.y + area.height * 0.54f};
-        food.rotation = 16.0f;
-        DrawFood(&food);
+        DrawGuideFoodPellet((Vector2){scene.x + scene.width * 0.44f, scene.y + scene.height * 0.56f}, 1.25f, -12.0f);
+        DrawGuideFoodPellet((Vector2){scene.x + scene.width * 0.56f, scene.y + scene.height * 0.50f}, 1.10f, 14.0f);
+        DrawGuideFoodPellet((Vector2){scene.x + scene.width * 0.62f, scene.y + scene.height * 0.62f}, 0.95f, -6.0f);
     } else if (type == SHOWCASE_BUBBLE) {
-        Bubble bubble = {0};
-        bubble.active = true;
-        bubble.pos = (Vector2){area.x + area.width * 0.5f, area.y + area.height * 0.56f};
-        bubble.radius = 24.0f;
-        bubble.alpha = 170.0f;
-        DrawBubble(&bubble);
+        DrawGuideBubblePreview((Vector2){scene.x + scene.width * 0.42f, scene.y + scene.height * 0.60f}, 26.0f, 142);
+        DrawGuideBubblePreview((Vector2){scene.x + scene.width * 0.58f, scene.y + scene.height * 0.46f}, 20.0f, 128);
+        DrawGuideBubblePreview((Vector2){scene.x + scene.width * 0.68f, scene.y + scene.height * 0.68f}, 13.0f, 118);
     } else if (type == SHOWCASE_SEAWEED) {
-        DrawSeaweed((Vector2){area.x + area.width * 0.34f, area.y + area.height - 8.0f}, time);
+        DrawSeaweed((Vector2){scene.x + scene.width * 0.34f, scene.y + scene.height + 6.0f}, 0.0f);
     } else if (type == SHOWCASE_CORAL) {
-        DrawCoral((Vector2){area.x + area.width * 0.5f, area.y + area.height * 0.68f});
+        DrawCoral((Vector2){scene.x + scene.width * 0.48f, scene.y + scene.height * 0.72f});
     } else if (type == SHOWCASE_HELMET) {
-        DrawHelmet((Vector2){area.x + area.width * 0.5f, area.y + area.height * 0.58f});
+        DrawHelmet((Vector2){scene.x + scene.width * 0.52f, scene.y + scene.height * 0.58f});
     } else if (type == SHOWCASE_SAND) {
-        DrawRectangleGradientV((int)area.x, (int)(area.y + area.height * 0.42f), (int)area.width, (int)(area.height * 0.46f),
+        DrawRectangleGradientV((int)scene.x, (int)(scene.y + scene.height * 0.42f), (int)scene.width, (int)(scene.height * 0.46f),
             (Color){215, 184, 114, 255}, (Color){189, 153, 90, 255});
-        for (int x = 0; x < (int)area.width; x += 18) {
-            DrawRectangle((int)(area.x + x), (int)(area.y + area.height * 0.4f + (x % 26) * 0.12f), 16, (int)(area.height * 0.48f), (Color){201, 169, 98, 255});
+        for (int x = 0; x < (int)scene.width; x += 18) {
+            DrawRectangle((int)(scene.x + x), (int)(scene.y + scene.height * 0.4f + (x % 26) * 0.12f), 16, (int)(scene.height * 0.48f), (Color){201, 169, 98, 255});
         }
-        for (int x = 0; x < (int)area.width; x += 16) {
-            DrawCircle((int)(area.x + x + 6), (int)(area.y + area.height * 0.82f), 1.6f, (Color){244, 230, 182, 160});
+        for (int x = 0; x < (int)scene.width; x += 16) {
+            DrawCircle((int)(scene.x + x + 6), (int)(scene.y + scene.height * 0.82f), 1.6f, (Color){244, 230, 182, 160});
         }
     } else if (type == SHOWCASE_BACKGROUND) {
-        for (int y = 0; y < (int)area.height; y++) {
-            float t = (float)y / area.height;
-            Color line = ColorLerp((Color){15, 74, 148, 255}, (Color){77, 182, 225, 255}, t);
-            DrawLine((int)area.x, (int)(area.y + y), (int)(area.x + area.width), (int)(area.y + y), line);
-        }
-        for (int i = 0; i < 4; i++) {
-            DrawEllipse((int)(area.x + area.width * 0.5f), (int)(area.y + 18 + i * 18), 72, 8, ColorAlpha(WHITE, 0.16f));
-        }
+        DrawMiniAquariumDecor(scene);
     }
 }
 
@@ -351,77 +457,146 @@ static void DrawShowcasePreview(Rectangle area, ShowcaseType type, float time) {
 #undef DrawRectangleRoundedLinesEx
 #undef DrawRectangleGradientV
 
+/* ======================
+Fungsi DrawShowcaseCard
+=======================
+Fungsi ini digunakan untuk menggambar showcase card.
+*/
 static void DrawShowcaseCard(Rectangle rect, const ShowcaseInfo *info, Font font, bool useFont, float time) {
     MenuPalette palette = Menu_GetPalette();
-    float previewWidth = rect.width * 0.24f;
-    if (previewWidth < 240.0f) previewWidth = 240.0f;
-    if (previewWidth > 300.0f) previewWidth = 300.0f;
-    Rectangle preview = {rect.x + 18, rect.y + 52, previewWidth, 150};
-    Rectangle descBox = {preview.x + preview.width + 20.0f, rect.y + 52, rect.x + rect.width - (preview.x + preview.width + 38.0f), 150};
+    float previewWidth = rect.width * 0.35f;
+    if (previewWidth < 320.0f) previewWidth = 320.0f;
+    if (previewWidth > 440.0f) previewWidth = 440.0f;
+
+    // Bagi kartu menjadi area preview visual dan area deskripsi.
+    Rectangle preview = {rect.x + 20.0f, rect.y + 56.0f, previewWidth, 228.0f};
+    Rectangle descBox = {preview.x + preview.width + 22.0f, rect.y + 56.0f, rect.x + rect.width - (preview.x + preview.width + 42.0f), 228.0f};
 
     Menu_DrawPanel(rect, ColorAlpha(WHITE, 0.82f), ColorAlpha(palette.panelStroke, 0.5f));
-    Menu_DrawText(font, useFont, info->name, (Vector2){rect.x + 18, rect.y + 14}, 28.0f, 1.0f, palette.text);
+    Menu_DrawText(font, useFont, info->name, (Vector2){rect.x + 20.0f, rect.y + 16.0f}, 32.0f, 1.0f, palette.text);
     DrawShowcasePreview(preview, info->type, time);
     Menu_DrawPanel(descBox, ColorAlpha((Color){239, 246, 250, 255}, 0.95f), ColorAlpha(palette.panelStroke, 0.28f));
     Menu_DrawWrappedText(font, useFont, info->description,
-        (Rectangle){descBox.x + 14, descBox.y + 14, descBox.width - 28, descBox.height - 28},
-        17.0f, 1.0f, palette.textSoft);
+        (Rectangle){descBox.x + 16, descBox.y + 16, descBox.width - 32, descBox.height - 32},
+        19.0f, 1.0f, palette.textSoft);
 
-    float partTop = rect.y + 222.0f;
-    int columns = (info->partCount <= 3) ? info->partCount : 3;
+    float partTop = rect.y + 302.0f;
+    int columns = (info->partCount <= 2) ? info->partCount : 2;
     int rows = (info->partCount + columns - 1) / columns;
-    float rowGap = 12.0f;
-    float colGap = 14.0f;
-    float availableWidth = rect.width - 36.0f - colGap * (columns - 1);
+    float rowGap = 16.0f;
+    float colGap = 18.0f;
+    float availableWidth = rect.width - 40.0f - colGap * (columns - 1);
     float boxWidth = availableWidth / columns;
-    float boxHeight = (rect.height - (partTop - rect.y) - 22.0f - rowGap * (rows - 1)) / rows;
+    float boxHeight = (rect.height - (partTop - rect.y) - 26.0f - rowGap * (rows - 1)) / rows;
+
+    // Susun detail komponen dalam grid agar penjelasan tetap ringkas dan terbaca.
     for (int i = 0; i < info->partCount; i++) {
         int col = i % columns;
         int row = i / columns;
         Rectangle box = {
-            rect.x + 18 + col * (boxWidth + colGap),
+            rect.x + 20 + col * (boxWidth + colGap),
             partTop + row * (boxHeight + rowGap),
             boxWidth,
             boxHeight
         };
         DrawPartPreview(box, info->type, i);
-        Menu_DrawText(font, useFont, info->parts[i].label, (Vector2){box.x + 8, box.y + 8}, 14.0f, 1.0f, palette.text);
+        Menu_DrawText(font, useFont, info->parts[i].label, (Vector2){box.x + 10, box.y + 10}, 16.0f, 1.0f, palette.text);
         Menu_DrawWrappedText(font, useFont, info->parts[i].description,
-            (Rectangle){box.x + 8, box.y + box.height - 42, box.width - 16, 34}, 10.0f, 1.0f, palette.textSoft);
+            (Rectangle){box.x + 10, box.y + box.height - 58, box.width - 20, 48}, 12.0f, 1.0f, palette.textSoft);
     }
 }
 
+/* ======================
+Fungsi GetGuideNavPanel
+=======================
+Fungsi ini digunakan untuk mengambil guide nav panel.
+*/
+static Rectangle GetGuideNavPanel(Rectangle bounds) {
+    return (Rectangle){bounds.x + 10.0f, bounds.y + kGuideIntroHeight + 18.0f, bounds.width - 40.0f, kGuideNavHeight};
+}
+
+/* ======================
+Fungsi GetGuideShowcaseButton
+=======================
+Fungsi ini digunakan untuk mengambil guide showcase button.
+*/
+static Rectangle GetGuideShowcaseButton(Rectangle bounds, int index) {
+    Rectangle nav = GetGuideNavPanel(bounds);
+    int columns = 5;
+    int col = index % columns;
+    int row = index / columns;
+    float gap = 10.0f;
+    float padX = 16.0f;
+    float padY = 46.0f;
+    float buttonW = (nav.width - padX * 2.0f - gap * (columns - 1)) / (float)columns;
+    float buttonH = 30.0f;
+    return (Rectangle){
+        nav.x + padX + col * (buttonW + gap),
+        nav.y + padY + row * (buttonH + 12.0f),
+        buttonW,
+        buttonH
+    };
+}
+
+/* ======================
+Fungsi DrawGuideJumpButton
+=======================
+Fungsi ini digunakan untuk menggambar guide jump button.
+*/
+static void DrawGuideJumpButton(Rectangle bounds, Font font, bool useFont, const char *label, bool selected) {
+    Color fill = selected ? (Color){69, 146, 184, 255} : ColorAlpha((Color){224, 237, 245, 255}, 0.96f);
+    Color stroke = selected ? (Color){24, 92, 132, 255} : ColorAlpha((Color){73, 123, 146, 255}, 0.42f);
+    Color text = selected ? RAYWHITE : (Color){26, 68, 88, 255};
+    DrawRectangleRounded(bounds, 0.35f, 8, fill);
+    DrawRectangleRoundedLinesEx(bounds, 0.35f, 8, 1.2f, stroke);
+    {
+        Vector2 size = Menu_MeasureText(font, useFont, label, 12.0f, 1.0f);
+        Menu_DrawText(font, useFont, label,
+            (Vector2){bounds.x + (bounds.width - size.x) * 0.5f, bounds.y + (bounds.height - size.y) * 0.5f - 1.0f},
+            13.0f, 1.0f, text);
+    }
+}
+
+/* ======================
+Fungsi DrawHowToPlayBody
+=======================
+Fungsi ini digunakan untuk menggambar how to play body.
+*/
 static void DrawHowToPlayBody(Rectangle bounds, Font font, bool useFont, float time) {
     MenuPalette palette = Menu_GetPalette();
-    float baseY = bounds.y;
+    Rectangle intro = {bounds.x + 10.0f, bounds.y, bounds.width - 40.0f, kGuideIntroHeight};
+    Rectangle nav = GetGuideNavPanel(bounds);
+    Rectangle detail = {bounds.x + 10.0f, nav.y + nav.height + 20.0f, bounds.width - 40.0f, kGuideDetailHeight};
 
-    Menu_DrawPanel((Rectangle){bounds.x + 10, baseY, bounds.width - 40, 176}, kSectionFill, ColorAlpha(palette.panelStroke, 0.42f));
-    Menu_DrawText(font, useFont, "Cara Bermain", (Vector2){bounds.x + 30, baseY + 16}, 24.0f, 1.0f, palette.text);
+    Menu_DrawPanel(intro, kSectionFill, ColorAlpha(palette.panelStroke, 0.42f));
+    Menu_DrawText(font, useFont, "Guide Overview", (Vector2){intro.x + 18.0f, intro.y + 14.0f}, 24.0f, 1.0f, palette.text);
     Menu_DrawWrappedText(font, useFont,
-        "1. Pilih Play dari Home untuk masuk ke permainan.\n"
-        "2. Klik area air untuk menjatuhkan makanan ikan.\n"
-        "3. Gunakan tombol Tambah Guppy, Carnivore, dan Ultravore pada UI game.\n"
-        "4. Guppy memakan food, Carnivore memakan Guppy, dan Ultravore memakan Carnivore.\n"
-        "5. Tombol Reset Aquarium akan menghapus semua ikan, food, dan bubble.\n"
-        "6. Visual Guppy kini memakai badan oval kecil dengan ekor kipas dan sirip atas halus.\n"
-        "7. Carnivore ditampilkan lebih bulat seperti piranha dengan garis zigzag badan dan gigi hanya di mulut.\n"
-        "8. Ultravore dibuat lebih panjang, bermulut besar, dan tidak memakai sirip atas agar sesuai referensi.\n"
-        "9. Tekan Backspace atau tombol Kembali untuk pulang ke Home.",
-        (Rectangle){bounds.x + 30, baseY + 50, bounds.width - 80, 136}, 14.0f, 1.0f, palette.textSoft);
+        "1. Choose Play from the main menu.\n"
+        "2. Click inside the water to drop food, with 6 pellets active at most.\n"
+        "3. Pellet fall speed stays consistent until it reaches the aquarium floor.\n"
+        "4. Cere eats pellets, lele hunts cere, and toman hunts lele.\n"
+        "5. Population limits stay at Cere 3, Lele 2, and Toman 1.\n"
+        "6. Use Reset Aquarium to clear fish, pellets, and bubbles.\n"
+        "7. Use the object buttons below to open each static visualization page.",
+        (Rectangle){intro.x + 18.0f, intro.y + 48.0f, intro.width - 36.0f, intro.height - 62.0f}, 15.0f, 1.0f, palette.textSoft);
 
-    Menu_DrawPanel((Rectangle){bounds.x + 10, baseY + 194, bounds.width - 40, 122}, kSectionFill, ColorAlpha(palette.panelStroke, 0.42f));
-    Menu_DrawText(font, useFont, "List Object dan Penjabaran Visualisasi", (Vector2){bounds.x + 30, baseY + 212}, 22.0f, 1.0f, palette.text);
-    Menu_DrawWrappedText(font, useFont,
-        "Setiap object di bawah menampilkan bentuk terbaru beserta part primitive komputer grafis yang dipakai. Deskripsi sudah disesuaikan dengan visual ikan yang sekarang tampil di project.",
-        (Rectangle){bounds.x + 30, baseY + 246, bounds.width - 80, 48}, 14.0f, 1.0f, palette.textSoft);
+    Menu_DrawPanel(nav, kSectionFill, ColorAlpha(palette.panelStroke, 0.42f));
+    Menu_DrawText(font, useFont, "Visualization Pages", (Vector2){nav.x + 18.0f, nav.y + 12.0f}, 20.0f, 1.0f, palette.text);
+    Menu_DrawText(font, useFont, TextFormat("Page %d / %d", s_selectedShowcase + 1, kShowcaseCount),
+        (Vector2){nav.x + nav.width - 124.0f, nav.y + 14.0f}, 15.0f, 1.0f, palette.textSoft);
 
-    float y = baseY + kIntroHeight;
     for (int i = 0; i < kShowcaseCount; i++) {
-        DrawShowcaseCard((Rectangle){bounds.x + 10, y, bounds.width - 40, kCardHeight}, &kShowcases[i], font, useFont, time);
-        y += kCardHeight + kCardGap;
+        DrawGuideJumpButton(GetGuideShowcaseButton(bounds, i), font, useFont, kShowcases[i].name, i == s_selectedShowcase);
     }
+
+    DrawShowcaseCard(detail, &kShowcases[s_selectedShowcase], font, useFont, time);
 }
 
+/* ======================
+Fungsi DrawAboutBody
+=======================
+Fungsi ini digunakan untuk menggambar about body.
+*/
 static void DrawAboutBody(Rectangle bounds, Font font, bool useFont, Texture2D photo, bool hasPhoto) {
     MenuPalette palette = Menu_GetPalette();
     float y = bounds.y;
@@ -484,11 +659,58 @@ static void DrawAboutBody(Rectangle bounds, Font font, bool useFont, Texture2D p
         (Rectangle){storyPanel.x + 18, storyPanel.y + 54, storyPanel.width - 36, 156}, 16.0f, 1.0f, palette.textSoft);
 }
 
-float Menu_GetHowToPlayContentHeight(void) {
-    return kIntroHeight + kShowcaseCount * (kCardHeight + kCardGap) + 20.0f;
+/* ======================
+Fungsi Menu_SetHowToPlaySelection
+=======================
+Fungsi ini digunakan untuk mengelola set how to play selection.
+*/
+void Menu_SetHowToPlaySelection(int index) {
+    if (index < 0) index = 0;
+    if (index >= kShowcaseCount) index = kShowcaseCount - 1;
+    s_selectedShowcase = index;
 }
 
+/* ======================
+Fungsi Menu_CycleHowToPlaySelection
+=======================
+Fungsi ini digunakan untuk mengelola cycle how to play selection.
+*/
+void Menu_CycleHowToPlaySelection(int delta) {
+    if (kShowcaseCount <= 0) return;
+    s_selectedShowcase = (s_selectedShowcase + delta) % kShowcaseCount;
+    if (s_selectedShowcase < 0) s_selectedShowcase += kShowcaseCount;
+}
+
+/* ======================
+Fungsi Menu_HandleHowToPlayClick
+=======================
+Fungsi ini digunakan untuk mengelola handle how to play click.
+*/
+void Menu_HandleHowToPlayClick(Rectangle bounds, Vector2 point) {
+    for (int i = 0; i < kShowcaseCount; i++) {
+        if (CheckCollisionPointRec(point, GetGuideShowcaseButton(bounds, i))) {
+            s_selectedShowcase = i;
+            return;
+        }
+    }
+}
+
+/* ======================
+Fungsi Menu_GetHowToPlayContentHeight
+=======================
+Fungsi ini digunakan untuk mengelola get how to play content height.
+*/
+float Menu_GetHowToPlayContentHeight(void) {
+    return kGuideContentHeight;
+}
+
+/* ======================
+Fungsi Menu_DrawHowToPlayContent
+=======================
+Fungsi ini digunakan untuk mengelola draw how to play content.
+*/
 void Menu_DrawHowToPlayContent(Rectangle bounds, float scroll, Font font, bool useFont, float time) {
+    // Scroll hanya menggeser body guide di dalam viewport halaman.
     DrawHowToPlayBody((Rectangle){
         bounds.x,
         bounds.y + scroll,
@@ -497,6 +719,11 @@ void Menu_DrawHowToPlayContent(Rectangle bounds, float scroll, Font font, bool u
     }, font, useFont, time);
 }
 
+/* ======================
+Fungsi Menu_GetAboutContentHeight
+=======================
+Fungsi ini digunakan untuk mengelola get about content height.
+*/
 float Menu_GetAboutContentHeight(Font font, bool useFont, float width) {
     float introHeight = Menu_MeasureWrappedText(font, useFont,
         "Game Feeding Fish terinspirasi dari konsep permainan Insaniquarium Deluxe dan dikembangkan sebagai bagian dari pemenuhan tugas besar mata kuliah Komputer Grafis untuk penilaian UTS. Implementasi ini disusun dengan menekankan pemanfaatan primitive 2D Raylib untuk membangun object aquarium, ikan, dekorasi, serta antarmuka secara terstruktur. Secara akademik, proyek ini berada di bawah bimbingan dosen pengampu M. Rizki Solahudin dan Yudhi Widiyasana sebagai bentuk penerapan materi visualisasi komputer grafis ke dalam karya interaktif mahasiswa.",
@@ -507,6 +734,11 @@ float Menu_GetAboutContentHeight(Font font, bool useFont, float width) {
     return 430.0f + introHeight + storyHeight;
 }
 
+/* ======================
+Fungsi Menu_DrawAboutContent
+=======================
+Fungsi ini digunakan untuk mengelola draw about content.
+*/
 void Menu_DrawAboutContent(Rectangle bounds, float scroll, Font font, bool useFont, Texture2D photo, bool hasPhoto, float time) {
     (void)time;
     DrawAboutBody((Rectangle){

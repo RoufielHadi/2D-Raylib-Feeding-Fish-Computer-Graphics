@@ -1,10 +1,19 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "game_session.h"
 
 #include "entities/bubble.h"
-#include "entities/carnivore.h"
+#include "entities/lele.h"
 #include "entities/food.h"
-#include "entities/guppy.h"
-#include "entities/ultravore.h"
+#include "entities/cere.h"
+#include "entities/toman.h"
 #include "systems/fish_system.h"
 #include "systems/food_system.h"
 #include "ui/button.h"
@@ -15,22 +24,37 @@
 
 #include <math.h>
 
-#define MAX_GUPPIES 9
-#define MAX_CARNIVORES 3
+#define MAX_GUPPIES 3
+#define MAX_CARNIVORES 2
 #define MAX_ULTRAVORES 1
-#define MAX_FOOD 40
+#define MAX_FOOD 6
 #define MAX_BUBBLES 24
 
+/* ======================
+Fungsi Dist
+=======================
+Fungsi ini digunakan untuk menjalankan proses Dist.
+*/
 static float Dist(Vector2 a, Vector2 b) {
     float dx = a.x - b.x;
     float dy = a.y - b.y;
     return sqrtf(dx * dx + dy * dy);
 }
 
+/* ======================
+Fungsi LerpValue
+=======================
+Fungsi ini digunakan untuk menginterpolasi value.
+*/
 static float LerpValue(float a, float b, float t) {
     return a + (b - a) * t;
 }
 
+/* ======================
+Fungsi IsPointInsideAquarium
+=======================
+Fungsi ini digunakan untuk memeriksa point inside aquarium.
+*/
 static bool IsPointInsideAquarium(Vector2 point) {
     Rectangle aquariumArea = {
         50.0f,
@@ -41,6 +65,11 @@ static bool IsPointInsideAquarium(Vector2 point) {
     return CheckCollisionPointRec(point, aquariumArea);
 }
 
+/* ======================
+Fungsi FindSpawnPoint
+=======================
+Fungsi ini digunakan untuk membuat point.
+*/
 static Vector2 FindSpawnPoint(Vector2 base, float radius,
     Guppy *guppies, int guppyCount,
     Carnivore *carnivores, int carnivoreCount,
@@ -125,6 +154,11 @@ static Vector2 FindSpawnPoint(Vector2 base, float radius,
     return base;
 }
 
+/* ======================
+Fungsi ResetAquarium
+=======================
+Fungsi ini digunakan untuk mengatur ulang aquarium.
+*/
 static void ResetAquarium(Guppy *guppies, Carnivore *carnivores, Ultravore *ultravoids, Food *foods, Bubble *bubbles) {
     for (int i = 0; i < MAX_GUPPIES; i++) {
         guppies[i].active = false;
@@ -152,6 +186,11 @@ static void ResetAquarium(Guppy *guppies, Carnivore *carnivores, Ultravore *ultr
     }
 }
 
+/* ======================
+Fungsi ShutdownGameAudio
+=======================
+Fungsi ini digunakan untuk menjalankan proses ShutdownGameAudio.
+*/
 static void ShutdownGameAudio(bool audioReady, bool hasBgm, Music bgm) {
     if (hasBgm) {
         StopMusicStream(bgm);
@@ -162,6 +201,11 @@ static void ShutdownGameAudio(bool audioReady, bool hasBgm, Music bgm) {
     }
 }
 
+/* ======================
+Fungsi RunGameSession
+=======================
+Fungsi ini digunakan untuk menjalankan proses RunGameSession.
+*/
 GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
     Guppy guppies[MAX_GUPPIES];
     Carnivore carnivores[MAX_CARNIVORES];
@@ -209,7 +253,7 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
                 for (int i = 0; i < MAX_GUPPIES; i++) {
                     if (!guppies[i].active) {
                         Vector2 spawnBase = {(float)GetScreenWidth() * 0.22f, (float)GetScreenHeight() * 0.50f};
-                        Vector2 spawn = FindSpawnPoint(spawnBase, 70.0f,
+                        Vector2 spawn = FindSpawnPoint(spawnBase, 66.0f,
                             guppies, MAX_GUPPIES, carnivores, MAX_CARNIVORES, ultravoids, MAX_ULTRAVORES);
                         InitGuppy(&guppies[i], spawn);
                         break;
@@ -219,7 +263,7 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
                 for (int i = 0; i < MAX_CARNIVORES; i++) {
                     if (!carnivores[i].active) {
                         Vector2 spawnBase = {(float)GetScreenWidth() * 0.50f, (float)GetScreenHeight() * 0.52f};
-                        Vector2 spawn = FindSpawnPoint(spawnBase, 88.0f,
+                        Vector2 spawn = FindSpawnPoint(spawnBase, 122.0f,
                             guppies, MAX_GUPPIES, carnivores, MAX_CARNIVORES, ultravoids, MAX_ULTRAVORES);
                         InitCarnivore(&carnivores[i], spawn);
                         break;
@@ -229,7 +273,7 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
                 for (int i = 0; i < MAX_ULTRAVORES; i++) {
                     if (!ultravoids[i].active) {
                         Vector2 spawnBase = {(float)GetScreenWidth() * 0.74f, (float)GetScreenHeight() * 0.50f};
-                        Vector2 spawn = FindSpawnPoint(spawnBase, 96.0f,
+                        Vector2 spawn = FindSpawnPoint(spawnBase, 172.0f,
                             guppies, MAX_GUPPIES, carnivores, MAX_CARNIVORES, ultravoids, MAX_ULTRAVORES);
                         InitUltravore(&ultravoids[i], spawn);
                         break;

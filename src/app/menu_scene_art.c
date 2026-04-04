@@ -1,3 +1,12 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "menu_scene_art.h"
 
 #include "raylib.h"
@@ -14,6 +23,11 @@ typedef struct {
     bool roundEye;
 } ArtFish;
 
+/* ======================
+Fungsi DrawWaterBackdropBase
+=======================
+Fungsi ini digunakan untuk menggambar water backdrop base.
+*/
 static void DrawWaterBackdropBase(float time, bool framed) {
     int w = GetScreenWidth();
     int h = GetScreenHeight();
@@ -106,6 +120,11 @@ static void DrawWaterBackdropBase(float time, bool framed) {
     }
 }
 
+/* ======================
+Fungsi DrawArtFish
+=======================
+Fungsi ini digunakan untuk menggambar art fish.
+*/
 static void DrawArtFish(const ArtFish *fish) {
     float dir = fish->facingRight ? 1.0f : -1.0f;
     float s = fish->scale;
@@ -143,6 +162,11 @@ static void DrawArtFish(const ArtFish *fish) {
     DrawLineBezier((Vector2){c.x + dir * 4.0f * s, c.y + 5.0f * s}, (Vector2){c.x + dir * 22.0f * s, c.y + 6.0f * s}, 1.6f * s, ColorAlpha(BLACK, 0.12f));
 }
 
+/* ======================
+Fungsi MenuArt_DrawWelcomeBackdrop
+=======================
+Fungsi ini digunakan untuk mengelola art draw welcome backdrop.
+*/
 void MenuArt_DrawWelcomeBackdrop(float time) {
     DrawWaterBackdropBase(time, false);
 
@@ -160,6 +184,11 @@ void MenuArt_DrawWelcomeBackdrop(float time) {
     }
 }
 
+/* ======================
+Fungsi MenuArt_DrawHomeBackdrop
+=======================
+Fungsi ini digunakan untuk mengelola art draw home backdrop.
+*/
 void MenuArt_DrawHomeBackdrop(float time) {
     DrawWaterBackdropBase(time, true);
 

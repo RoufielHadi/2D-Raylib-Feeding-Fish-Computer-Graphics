@@ -1,7 +1,21 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "menu_layout.h"
 
 #include "raylib.h"
 
+/* ======================
+Fungsi Menu_CreateScrollableLayout
+=======================
+Fungsi ini digunakan untuk mengelola create scrollable layout.
+*/
 MenuPageLayout Menu_CreateScrollableLayout(void) {
     float screenW = (float)GetScreenWidth();
     float screenH = (float)GetScreenHeight();
@@ -72,6 +86,11 @@ MenuPageLayout Menu_CreateScrollableLayout(void) {
     return layout;
 }
 
+/* ======================
+Fungsi Menu_CreateCenteredButton
+=======================
+Fungsi ini digunakan untuk mengelola create centered button.
+*/
 Rectangle Menu_CreateCenteredButton(float y, float width, float height) {
     return (Rectangle){
         (GetScreenWidth() - width) * 0.5f,

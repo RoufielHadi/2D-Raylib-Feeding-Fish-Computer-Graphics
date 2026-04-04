@@ -1,3 +1,12 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #define PRIMITIVES_NO_RAYLIB_ALIASES
 #include "primitives.h"
 
@@ -14,16 +23,31 @@ typedef struct {
     float y;
 } SortablePoint;
 
+/* ======================
+Fungsi RoundToInt
+=======================
+Fungsi ini digunakan untuk menjalankan proses RoundToInt.
+*/
 static int RoundToInt(float value) {
     return (int)lroundf(value);
 }
 
+/* ======================
+Fungsi SwapPoint
+=======================
+Fungsi ini digunakan untuk menjalankan proses SwapPoint.
+*/
 static void SwapPoint(SortablePoint *a, SortablePoint *b) {
     SortablePoint tmp = *a;
     *a = *b;
     *b = tmp;
 }
 
+/* ======================
+Fungsi LerpColor
+=======================
+Fungsi ini digunakan untuk menginterpolasi color.
+*/
 static Color LerpColor(Color from, Color to, float t) {
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
@@ -36,6 +60,11 @@ static Color LerpColor(Color from, Color to, float t) {
     return out;
 }
 
+/* ======================
+Fungsi DrawHorizontalSpan
+=======================
+Fungsi ini digunakan untuk menggambar horizontal span.
+*/
 static void DrawHorizontalSpan(int x1, int x2, int y, Color color) {
     if (x2 < x1) {
         int tmp = x1;
@@ -48,6 +77,11 @@ static void DrawHorizontalSpan(int x1, int x2, int y, Color color) {
     }
 }
 
+/* ======================
+Fungsi DrawVerticalSpan
+=======================
+Fungsi ini digunakan untuk menggambar vertical span.
+*/
 static void DrawVerticalSpan(int x, int y1, int y2, Color color) {
     if (y2 < y1) {
         int tmp = y1;
@@ -60,6 +94,11 @@ static void DrawVerticalSpan(int x, int y1, int y2, Color color) {
     }
 }
 
+/* ======================
+Fungsi FillEllipseMidpoint
+=======================
+Fungsi ini digunakan untuk menjalankan proses FillEllipseMidpoint.
+*/
 static void FillEllipseMidpoint(int cx, int cy, int rx, int ry, Color color) {
     if (rx <= 0 || ry <= 0) return;
 
@@ -97,6 +136,11 @@ static void FillEllipseMidpoint(int cx, int cy, int rx, int ry, Color color) {
     }
 }
 
+/* ======================
+Fungsi FillFlatBottomTriangle
+=======================
+Fungsi ini digunakan untuk menjalankan proses FillFlatBottomTriangle.
+*/
 static void FillFlatBottomTriangle(SortablePoint top, SortablePoint left, SortablePoint right, Color color) {
     float invSlopeLeft = (left.y != top.y) ? (left.x - top.x) / (left.y - top.y) : 0.0f;
     float invSlopeRight = (right.y != top.y) ? (right.x - top.x) / (right.y - top.y) : 0.0f;
@@ -113,6 +157,11 @@ static void FillFlatBottomTriangle(SortablePoint top, SortablePoint left, Sortab
     }
 }
 
+/* ======================
+Fungsi FillFlatTopTriangle
+=======================
+Fungsi ini digunakan untuk menjalankan proses FillFlatTopTriangle.
+*/
 static void FillFlatTopTriangle(SortablePoint left, SortablePoint right, SortablePoint bottom, Color color) {
     float invSlopeLeft = (bottom.y != left.y) ? (bottom.x - left.x) / (bottom.y - left.y) : 0.0f;
     float invSlopeRight = (bottom.y != right.y) ? (bottom.x - right.x) / (bottom.y - right.y) : 0.0f;
@@ -129,6 +178,11 @@ static void FillFlatTopTriangle(SortablePoint left, SortablePoint right, Sortabl
     }
 }
 
+/* ======================
+Fungsi DrawTriangleFilled
+=======================
+Fungsi ini digunakan untuk menggambar triangle filled.
+*/
 static void DrawTriangleFilled(Vector2 v1, Vector2 v2, Vector2 v3, Color color) {
     SortablePoint p1 = {v1.x, v1.y};
     SortablePoint p2 = {v2.x, v2.y};
@@ -169,6 +223,11 @@ static void DrawTriangleFilled(Vector2 v1, Vector2 v2, Vector2 v3, Color color) 
     }
 }
 
+/* ======================
+Fungsi RoundedRadius
+=======================
+Fungsi ini digunakan untuk menjalankan proses RoundedRadius.
+*/
 static int RoundedRadius(Rectangle rec, float roundness) {
     float minSide = (rec.width < rec.height) ? rec.width : rec.height;
     int radius = RoundToInt((minSide * roundness) * 0.5f);
@@ -180,6 +239,11 @@ static int RoundedRadius(Rectangle rec, float roundness) {
     return radius;
 }
 
+/* ======================
+Fungsi RoundedInsetForRow
+=======================
+Fungsi ini digunakan untuk menjalankan proses RoundedInsetForRow.
+*/
 static int RoundedInsetForRow(int radius, int yOffset) {
     if (radius <= 0) return 0;
     if (yOffset < 0) yOffset = -yOffset;
@@ -193,6 +257,11 @@ static int RoundedInsetForRow(int radius, int yOffset) {
     return inset;
 }
 
+/* ======================
+Fungsi DrawRoundedRectFilled
+=======================
+Fungsi ini digunakan untuk menggambar rounded rect filled.
+*/
 static void DrawRoundedRectFilled(Rectangle rec, int radius, Color color) {
     int left = RoundToInt(rec.x);
     int top = RoundToInt(rec.y);
@@ -217,6 +286,11 @@ static void DrawRoundedRectFilled(Rectangle rec, int radius, Color color) {
     }
 }
 
+/* ======================
+Fungsi DrawRoundedRectOutline
+=======================
+Fungsi ini digunakan untuk menggambar rounded rect outline.
+*/
 static void DrawRoundedRectOutline(Rectangle rec, int radius, int thickness, Color color) {
     int left = RoundToInt(rec.x);
     int top = RoundToInt(rec.y);
@@ -275,6 +349,11 @@ static void DrawRoundedRectOutline(Rectangle rec, int radius, int thickness, Col
     }
 }
 
+/* ======================
+Fungsi AngleWithinSweep
+=======================
+Fungsi ini digunakan untuk menjalankan proses AngleWithinSweep.
+*/
 static int AngleWithinSweep(float angleDeg, float startAngle, float endAngle) {
     while (angleDeg < 0.0f) angleDeg += 360.0f;
     while (angleDeg >= 360.0f) angleDeg -= 360.0f;
@@ -288,6 +367,11 @@ static int AngleWithinSweep(float angleDeg, float startAngle, float endAngle) {
     return angleDeg >= startAngle || angleDeg <= endAngle;
 }
 
+/* ======================
+Fungsi DrawRingFilled
+=======================
+Fungsi ini digunakan untuk menggambar ring filled.
+*/
 static void DrawRingFilled(Vector2 center, int innerRadius, int outerRadius, float startAngle, float endAngle, Color color) {
     int cx = RoundToInt(center.x);
     int cy = RoundToInt(center.y);
@@ -317,42 +401,82 @@ static void DrawRingFilled(Vector2 center, int innerRadius, int outerRadius, flo
     }
 }
 
+/* ======================
+Fungsi Prim_DrawLine
+=======================
+Fungsi ini digunakan untuk menggambar line.
+*/
 void Prim_DrawLine(int startX, int startY, int endX, int endY, Color color) {
     BresenhamLine(startX, startY, endX, endY, color);
 }
 
+/* ======================
+Fungsi Prim_DrawLineEx
+=======================
+Fungsi ini digunakan untuk menggambar line ex.
+*/
 void Prim_DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color) {
     int thickness = RoundToInt(thick);
     if (thickness < 1) thickness = 1;
     Bres_ThickLine(RoundToInt(startPos.x), RoundToInt(startPos.y), RoundToInt(endPos.x), RoundToInt(endPos.y), thickness, color);
 }
 
+/* ======================
+Fungsi Prim_DrawLineBezier
+=======================
+Fungsi ini digunakan untuk menggambar line bezier.
+*/
 void Prim_DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color) {
     int thickness = RoundToInt(thick);
     if (thickness < 1) thickness = 1;
     DDA_ThickLine(RoundToInt(startPos.x), RoundToInt(startPos.y), RoundToInt(endPos.x), RoundToInt(endPos.y), thickness, color);
 }
 
+/* ======================
+Fungsi Prim_DrawTriangle
+=======================
+Fungsi ini digunakan untuk menggambar triangle.
+*/
 void Prim_DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color) {
     DrawTriangleFilled(v1, v2, v3, color);
 }
 
+/* ======================
+Fungsi Prim_DrawCircle
+=======================
+Fungsi ini digunakan untuk menggambar circle.
+*/
 void Prim_DrawCircle(int centerX, int centerY, float radius, Color color) {
     int r = RoundToInt(radius);
     if (r < 1) r = 1;
     MidcircleFilled(centerX, centerY, r, color);
 }
 
+/* ======================
+Fungsi Prim_DrawCircleV
+=======================
+Fungsi ini digunakan untuk menggambar circle v.
+*/
 void Prim_DrawCircleV(Vector2 center, float radius, Color color) {
     Prim_DrawCircle(RoundToInt(center.x), RoundToInt(center.y), radius, color);
 }
 
+/* ======================
+Fungsi Prim_DrawCircleLines
+=======================
+Fungsi ini digunakan untuk menggambar circle lines.
+*/
 void Prim_DrawCircleLines(int centerX, int centerY, float radius, Color color) {
     int r = RoundToInt(radius);
     if (r < 1) r = 1;
     Midcircle(centerX, centerY, r, color);
 }
 
+/* ======================
+Fungsi Prim_DrawEllipse
+=======================
+Fungsi ini digunakan untuk menggambar ellipse.
+*/
 void Prim_DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color) {
     int rx = RoundToInt(radiusH);
     int ry = RoundToInt(radiusV);
@@ -360,6 +484,11 @@ void Prim_DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Co
     FillEllipseMidpoint(centerX, centerY, rx, ry, color);
 }
 
+/* ======================
+Fungsi Prim_DrawRectangle
+=======================
+Fungsi ini digunakan untuk menggambar rectangle.
+*/
 void Prim_DrawRectangle(int posX, int posY, int width, int height, Color color) {
     if (width <= 0 || height <= 0) return;
     for (int y = posY; y < posY + height; y++) {
@@ -367,16 +496,31 @@ void Prim_DrawRectangle(int posX, int posY, int width, int height, Color color) 
     }
 }
 
+/* ======================
+Fungsi Prim_DrawRectangleRounded
+=======================
+Fungsi ini digunakan untuk menggambar rectangle rounded.
+*/
 void Prim_DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color) {
     (void)segments;
     int radius = RoundedRadius(rec, roundness);
     DrawRoundedRectFilled(rec, radius, color);
 }
 
+/* ======================
+Fungsi Prim_DrawRectangleRoundedLines
+=======================
+Fungsi ini digunakan untuk menggambar rectangle rounded lines.
+*/
 void Prim_DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, Color color) {
     Prim_DrawRectangleRoundedLinesEx(rec, roundness, segments, 1.0f, color);
 }
 
+/* ======================
+Fungsi Prim_DrawRectangleRoundedLinesEx
+=======================
+Fungsi ini digunakan untuk menggambar rectangle rounded lines ex.
+*/
 void Prim_DrawRectangleRoundedLinesEx(Rectangle rec, float roundness, int segments, float lineThick, Color color) {
     (void)segments;
     int radius = RoundedRadius(rec, roundness);
@@ -385,6 +529,11 @@ void Prim_DrawRectangleRoundedLinesEx(Rectangle rec, float roundness, int segmen
     DrawRoundedRectOutline(rec, radius, thickness, color);
 }
 
+/* ======================
+Fungsi Prim_DrawRectangleGradientV
+=======================
+Fungsi ini digunakan untuk menggambar rectangle gradient v.
+*/
 void Prim_DrawRectangleGradientV(int posX, int posY, int width, int height, Color top, Color bottom) {
     if (width <= 0 || height <= 0) return;
     if (height == 1) {
@@ -398,6 +547,11 @@ void Prim_DrawRectangleGradientV(int posX, int posY, int width, int height, Colo
     }
 }
 
+/* ======================
+Fungsi Prim_DrawRing
+=======================
+Fungsi ini digunakan untuk menggambar ring.
+*/
 void Prim_DrawRing(Vector2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, int segments, Color color) {
     (void)segments;
     int inner = RoundToInt(innerRadius);
