@@ -1,15 +1,29 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "ui.h"
 
+/* ======================
+Fungsi UI_GetButtonRects
+=======================
+Fungsi ini digunakan untuk mengambil button rects.
+*/
 void UI_GetButtonRects(Rectangle outRects[6]) {
     int w = GetScreenWidth();
     float margin = 18.0f;
     float top = 14.0f;
     float btnH = 72.0f;
     float gap = 16.0f;
-    float leftBtnW = 170.0f;
-    float resetBtnW = 178.0f;
-    float rightBtnW = 166.0f;
-    float backBtnW = 122.0f;
+    float leftBtnW = 162.0f;
+    float resetBtnW = 166.0f;
+    float rightBtnW = 150.0f;
+    float backBtnW = 132.0f;
 
     outRects[0] = (Rectangle){margin + 0.0f * (leftBtnW + gap), top, leftBtnW, btnH};
     outRects[1] = (Rectangle){margin + 1.0f * (leftBtnW + gap), top, leftBtnW, btnH};
@@ -20,6 +34,11 @@ void UI_GetButtonRects(Rectangle outRects[6]) {
     outRects[5] = (Rectangle){(float)w - margin - backBtnW, top, backBtnW, btnH};
 }
 
+/* ======================
+Fungsi UI_HitTest
+=======================
+Fungsi ini digunakan untuk menjalankan proses UI_HitTest.
+*/
 UIButtonId UI_HitTest(Vector2 point) {
     Rectangle rects[6];
     UI_GetButtonRects(rects);
@@ -41,17 +60,50 @@ UIButtonId UI_HitTest(Vector2 point) {
 static bool s_volumeOpen = false;
 static float s_volume = 0.6f;
 
+/* ======================
+Fungsi UI_ToggleVolume
+=======================
+Fungsi ini digunakan untuk menjalankan proses UI_ToggleVolume.
+*/
 void UI_ToggleVolume(void) { s_volumeOpen = !s_volumeOpen; }
+
+/* ======================
+Fungsi UI_IsVolumeOpen
+=======================
+Fungsi ini digunakan untuk memeriksa volume open.
+*/
 bool UI_IsVolumeOpen(void) { return s_volumeOpen; }
+
+/* ======================
+Fungsi UI_GetVolume
+=======================
+Fungsi ini digunakan untuk mengambil volume.
+*/
 float UI_GetVolume(void) { return s_volume; }
+
+/* ======================
+Fungsi UI_SetVolume
+=======================
+Fungsi ini digunakan untuk mengatur volume.
+*/
 void UI_SetVolume(float v) { if (v < 0.0f) v = 0.0f; if (v > 1.0f) v = 1.0f; s_volume = v; }
 
+/* ======================
+Fungsi UI_GetVolumeSliderRect
+=======================
+Fungsi ini digunakan untuk mengambil volume slider rect.
+*/
 Rectangle UI_GetVolumeSliderRect(void) {
     Rectangle rects[6];
     UI_GetButtonRects(rects);
     return (Rectangle){rects[4].x, 92.0f, rects[4].width + rects[5].width + 16.0f, 16.0f};
 }
 
+/* ======================
+Fungsi UI_HandleVolumeClick
+=======================
+Fungsi ini digunakan untuk menangani volume click.
+*/
 void UI_HandleVolumeClick(Vector2 point) {
     Rectangle sr = UI_GetVolumeSliderRect();
     if (CheckCollisionPointRec(point, sr)) {

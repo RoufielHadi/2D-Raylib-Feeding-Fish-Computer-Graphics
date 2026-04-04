@@ -1,3 +1,12 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "app.h"
 
 #include "game_session.h"
@@ -40,6 +49,11 @@ typedef struct {
 static PageChromeCache s_howToChromeCache = {0};
 static PageChromeCache s_aboutChromeCache = {0};
 
+/* ======================
+Fungsi DrawSubtleHint
+=======================
+Fungsi ini digunakan untuk menggambar subtle hint.
+*/
 static void DrawSubtleHint(const AppState *app, Rectangle box, const char *text, Color fill, Color stroke, Color textColor) {
     DrawRectangleRounded(box, 0.35f, 10, fill);
     DrawRectangleRoundedLinesEx(box, 0.35f, 10, 1.0f, stroke);
@@ -49,6 +63,47 @@ static void DrawSubtleHint(const AppState *app, Rectangle box, const char *text,
         16.0f, 1.0f, textColor);
 }
 
+/* ======================
+Fungsi DrawFullscreenTexture
+=======================
+Fungsi ini digunakan untuk menggambar fullscreen texture.
+*/
+static void DrawFullscreenTexture(Texture2D texture, Color tint) {
+    Rectangle source = {0.0f, 0.0f, (float)texture.width, (float)texture.height};
+    Rectangle dest = {0.0f, 0.0f, (float)GetScreenWidth(), (float)GetScreenHeight()};
+    DrawTexturePro(texture, source, dest, (Vector2){0.0f, 0.0f}, 0.0f, tint);
+}
+
+/* ======================
+Fungsi DrawWelcomeContinueButton
+=======================
+Fungsi ini digunakan untuk menggambar welcome continue button.
+*/
+static void DrawWelcomeContinueButton(const AppState *app, Rectangle bounds) {
+    bool hovered = CheckCollisionPointRec(GetMousePosition(), bounds);
+    Rectangle shell = {bounds.x, bounds.y, bounds.width, bounds.height};
+    Rectangle inner = {bounds.x + 7.0f, bounds.y + 7.0f, bounds.width - 14.0f, bounds.height - 14.0f};
+    Color shellColor = hovered ? ColorAlpha((Color){21, 86, 121, 255}, 0.68f) : ColorAlpha((Color){12, 66, 98, 255}, 0.56f);
+    Color innerColor = hovered ? ColorAlpha((Color){220, 247, 255, 255}, 0.26f) : ColorAlpha((Color){235, 248, 255, 255}, 0.16f);
+    Color stroke = hovered ? ColorAlpha((Color){241, 251, 255, 255}, 0.82f) : ColorAlpha((Color){205, 239, 249, 255}, 0.56f);
+    Color text = hovered ? (Color){250, 252, 255, 255} : (Color){236, 246, 252, 255};
+
+    DrawRectangleRounded((Rectangle){shell.x + 3.0f, shell.y + 5.0f, shell.width, shell.height}, 0.42f, 16, ColorAlpha(BLACK, 0.16f));
+    DrawRectangleRounded(shell, 0.42f, 16, shellColor);
+    DrawRectangleRounded(inner, 0.42f, 16, innerColor);
+    DrawRectangleRoundedLinesEx(shell, 0.42f, 16, 1.5f, stroke);
+
+    Vector2 labelSize = Menu_MeasureText(app->assets.font, app->assets.useFont, "Continue", 25.0f, 1.0f);
+    Menu_DrawText(app->assets.font, app->assets.useFont, "Continue",
+        (Vector2){shell.x + (shell.width - labelSize.x) * 0.5f, shell.y + (shell.height - labelSize.y) * 0.5f - 1.0f},
+        25.0f, 1.0f, text);
+}
+
+/* ======================
+Fungsi DrawImageMenuButton
+=======================
+Fungsi ini digunakan untuk menggambar image menu button.
+*/
 static void DrawImageMenuButton(const AppState *app, MenuButton button, bool selected) {
     bool hovered = CheckCollisionPointRec(GetMousePosition(), button.bounds);
     Rectangle outer = button.bounds;
@@ -70,12 +125,22 @@ static void DrawImageMenuButton(const AppState *app, MenuButton button, bool sel
         26.0f, 1.0f, textColor);
 }
 
+/* ======================
+Fungsi ClampScroll
+=======================
+Fungsi ini digunakan untuk membatasi scroll.
+*/
 static void ClampScroll(float *value, float viewportHeight, float contentHeight) {
     float minScroll = (contentHeight > viewportHeight) ? (viewportHeight - contentHeight) : 0.0f;
     if (*value < minScroll) *value = minScroll;
     if (*value > 0.0f) *value = 0.0f;
 }
 
+/* ======================
+Fungsi UpdateScroll
+=======================
+Fungsi ini digunakan untuk memperbarui scroll.
+*/
 static float UpdateScroll(float current, float viewportHeight, float contentHeight) {
     float wheel = GetMouseWheelMove();
     current += wheel * 48.0f;
@@ -87,11 +152,21 @@ static float UpdateScroll(float current, float viewportHeight, float contentHeig
     return current;
 }
 
+/* ======================
+Fungsi DrawTitle
+=======================
+Fungsi ini digunakan untuk menggambar title.
+*/
 static void DrawTitle(const AppState *app, const char *title, Vector2 pos, float size) {
     MenuPalette palette = Menu_GetPalette();
     Menu_DrawText(app->assets.font, app->assets.useFont, title, pos, size, 1.0f, palette.text);
 }
 
+/* ======================
+Fungsi DrawHeroTitle
+=======================
+Fungsi ini digunakan untuk menggambar hero title.
+*/
 static void DrawHeroTitle(const AppState *app, const char *title, float y, float size) {
     Vector2 textSize = Menu_MeasureText(app->assets.font, app->assets.useFont, title, size, 1.0f);
     Vector2 pos = {(GetScreenWidth() - textSize.x) * 0.5f, y};
@@ -111,6 +186,11 @@ static void DrawHeroTitle(const AppState *app, const char *title, float y, float
         size, 1.0f, ColorAlpha((Color){24, 86, 198, 255}, 0.36f));
 }
 
+/* ======================
+Fungsi GetHomeButtonBounds
+=======================
+Fungsi ini digunakan untuk mengambil home button bounds.
+*/
 static Rectangle GetHomeButtonBounds(int index) {
     const float buttonWidth = 398.0f;
     const float buttonHeight = 86.0f;
@@ -125,45 +205,75 @@ static Rectangle GetHomeButtonBounds(int index) {
     };
 }
 
-static void DrawWelcomeScreen(const AppState *app, float time) {
-    MenuArt_DrawWelcomeBackdrop(time);
-
-    Rectangle glassOuter = {72.0f, 40.0f, (float)GetScreenWidth() - 144.0f, (float)GetScreenHeight() - 132.0f};
-    Rectangle glassInner = {glassOuter.x + 30.0f, glassOuter.y + 26.0f, glassOuter.width - 60.0f, glassOuter.height - 52.0f};
-    Rectangle enterButton = {(GetScreenWidth() - 360.0f) * 0.5f, GetScreenHeight() - 174.0f, 360.0f, 70.0f};
-
-    DrawRectangleRounded(glassOuter, 0.035f, 14, ColorAlpha((Color){4, 26, 48, 255}, 0.18f));
-    DrawRectangleRounded(glassInner, 0.035f, 14, ColorAlpha((Color){255, 255, 255, 255}, 0.05f));
-
-    DrawHeroTitle(app, "Feeding Fish", 246.0f, 102.0f);
-    Menu_DrawWrappedText(app->assets.font, app->assets.useFont,
-        "Kelola aquarium digital dan pelajari bagaimana object komputer grafis membentuk seluruh isi game.",
-        (Rectangle){(GetScreenWidth() - 760.0f) * 0.5f, 364.0f, 760.0f, 74.0f},
-        22.0f, 1.0f, ColorAlpha((Color){235, 247, 255, 255}, 0.92f));
-
-    Menu_DrawButton((MenuButton){enterButton, "Press Enter"}, app->assets.font, app->assets.useFont, true);
-    Menu_DrawInstructionBox((Rectangle){(GetScreenWidth() - 572.0f) * 0.5f, GetScreenHeight() - 86.0f, 572.0f, 40.0f},
-        app->assets.font, app->assets.useFont, "Tekan Enter untuk masuk ke Home.");
-
-    DrawSubtleHint(app, (Rectangle){32.0f, 30.0f, 190.0f, 48.0f}, "POLBAN",
-        ColorAlpha((Color){4, 36, 58, 255}, 0.25f),
-        ColorAlpha((Color){180, 232, 245, 255}, 0.18f),
-        ColorAlpha((Color){38, 46, 138, 255}, 0.95f));
-
-    Menu_DrawText(app->assets.font, app->assets.useFont, "Created By Roufiel Hadi",
-        (Vector2){GetScreenWidth() - 284.0f, GetScreenHeight() - 44.0f}, 16.0f, 1.0f, ColorAlpha(RAYWHITE, 0.94f));
+/* ======================
+Fungsi GetWelcomeEnterButtonBounds
+=======================
+Fungsi ini digunakan untuk mengambil welcome enter button bounds.
+*/
+static Rectangle GetWelcomeEnterButtonBounds(void) {
+    return (Rectangle){(GetScreenWidth() - 360.0f) * 0.5f, GetScreenHeight() - 174.0f, 360.0f, 70.0f};
 }
 
+/* ======================
+Fungsi DrawWelcomeScreen
+=======================
+Fungsi ini digunakan untuk menggambar welcome screen.
+*/
+static void DrawWelcomeScreen(const AppState *app, float time) {
+    Rectangle enterButton = GetWelcomeEnterButtonBounds();
+    Rectangle instruction = {(GetScreenWidth() - 572.0f) * 0.5f, GetScreenHeight() - 86.0f, 572.0f, 40.0f};
+
+    // Gunakan PNG bawaan jika aset latar berhasil dimuat.
+    if (app->assets.hasWelcomeBackground) {
+        DrawFullscreenTexture(app->assets.welcomeBackground, WHITE);
+    } else {
+        // Siapkan fallback backdrop agar welcome screen tetap layak dipakai.
+        MenuArt_DrawWelcomeBackdrop(time);
+
+        Rectangle glassOuter = {72.0f, 40.0f, (float)GetScreenWidth() - 144.0f, (float)GetScreenHeight() - 132.0f};
+        Rectangle glassInner = {glassOuter.x + 30.0f, glassOuter.y + 26.0f, glassOuter.width - 60.0f, glassOuter.height - 52.0f};
+
+        DrawRectangleRounded(glassOuter, 0.035f, 14, ColorAlpha((Color){4, 26, 48, 255}, 0.18f));
+        DrawRectangleRounded(glassInner, 0.035f, 14, ColorAlpha((Color){255, 255, 255, 255}, 0.05f));
+
+        DrawHeroTitle(app, "Feeding Fish", 246.0f, 102.0f);
+        Menu_DrawWrappedText(app->assets.font, app->assets.useFont,
+            "Kelola aquarium digital dan pelajari bagaimana object komputer grafis membentuk seluruh isi game.",
+            (Rectangle){(GetScreenWidth() - 760.0f) * 0.5f, 364.0f, 760.0f, 74.0f},
+            22.0f, 1.0f, ColorAlpha((Color){235, 247, 255, 255}, 0.92f));
+
+        DrawSubtleHint(app, (Rectangle){32.0f, 30.0f, 190.0f, 48.0f}, "POLBAN",
+            ColorAlpha((Color){4, 36, 58, 255}, 0.25f),
+            ColorAlpha((Color){180, 232, 245, 255}, 0.18f),
+            ColorAlpha((Color){38, 46, 138, 255}, 0.95f));
+
+        Menu_DrawText(app->assets.font, app->assets.useFont, "Created By Roufiel Hadi",
+            (Vector2){GetScreenWidth() - 284.0f, GetScreenHeight() - 44.0f}, 16.0f, 1.0f, ColorAlpha(RAYWHITE, 0.94f));
+    }
+
+    DrawWelcomeContinueButton(app, enterButton);
+    Menu_DrawInstructionBox(instruction, app->assets.font, app->assets.useFont, "Tekan Enter atau klik Continue untuk masuk.");
+}
+
+/* ======================
+Fungsi DrawHomeScreen
+=======================
+Fungsi ini digunakan untuk menggambar home screen.
+*/
 static void DrawHomeScreen(const AppState *app, float time) {
     MenuButton buttons[4] = {
         {GetHomeButtonBounds(0), "Play"},
-        {GetHomeButtonBounds(1), "How To Play"},
+        {GetHomeButtonBounds(1), "Guide"},
         {GetHomeButtonBounds(2), "About"},
         {GetHomeButtonBounds(3), "Exit"}
     };
 
-    MenuArt_DrawHomeBackdrop(time);
-    DrawHeroTitle(app, "Feeding Fish", 84.0f, 74.0f);
+    if (app->assets.hasHomeBackground) {
+        DrawFullscreenTexture(app->assets.homeBackground, WHITE);
+    } else {
+        MenuArt_DrawHomeBackdrop(time);
+        DrawHeroTitle(app, "Feeding Fish", 84.0f, 74.0f);
+    }
 
     for (int i = 0; i < 4; i++) {
         DrawImageMenuButton(app, buttons[i], app->homeSelection == i);
@@ -171,12 +281,17 @@ static void DrawHomeScreen(const AppState *app, float time) {
 
     DrawSubtleHint(app,
         (Rectangle){(GetScreenWidth() - 620.0f) * 0.5f, (float)GetScreenHeight() - 46.0f, 620.0f, 32.0f},
-        "Panah atas/bawah atau mouse untuk memilih. Enter untuk masuk.",
+        "Use arrow keys or the mouse, then press Enter.",
         ColorAlpha((Color){5, 36, 52, 255}, 0.20f),
         ColorAlpha((Color){165, 225, 238, 255}, 0.08f),
         ColorAlpha((Color){240, 247, 255, 255}, 0.78f));
 }
 
+/* ======================
+Fungsi EnsureScrollableChromeCache
+=======================
+Fungsi ini digunakan untuk memastikan scrollable chrome cache.
+*/
 static void EnsureScrollableChromeCache(PageChromeCache *cache, const AppState *app, MenuPageLayout layout, const char *title, const char *instruction) {
     int width = GetScreenWidth();
     int height = GetScreenHeight();
@@ -200,6 +315,11 @@ static void EnsureScrollableChromeCache(PageChromeCache *cache, const AppState *
     }
 }
 
+/* ======================
+Fungsi DrawCachedScrollablePage
+=======================
+Fungsi ini digunakan untuk menggambar cached scrollable page.
+*/
 static void DrawCachedScrollablePage(const AppState *app, PageChromeCache *cache, MenuPageLayout layout, const char *title, const char *instruction) {
     EnsureScrollableChromeCache(cache, app, layout, title, instruction);
     DrawTextureRec(cache->texture.texture,
@@ -208,20 +328,25 @@ static void DrawCachedScrollablePage(const AppState *app, PageChromeCache *cache
     Menu_DrawButton((MenuButton){layout.backButton, "Back"}, app->assets.font, app->assets.useFont, false);
 }
 
+/* ======================
+Fungsi UpdateWelcomeScreen
+=======================
+Fungsi ini digunakan untuk memperbarui welcome screen.
+*/
 static bool UpdateWelcomeScreen(void) {
-    Rectangle hintBox = {
-        (GetScreenWidth() - 312.0f) * 0.5f,
-        (float)GetScreenHeight() - 72.0f,
-        312.0f,
-        42.0f
-    };
-    return IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || Menu_ButtonPressed((MenuButton){hintBox, ""});
+    Rectangle enterButton = GetWelcomeEnterButtonBounds();
+    return IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER) || Menu_ButtonPressed((MenuButton){enterButton, ""});
 }
 
+/* ======================
+Fungsi UpdateHomeScreen
+=======================
+Fungsi ini digunakan untuk memperbarui home screen.
+*/
 static AppScreen UpdateHomeScreen(AppState *app) {
     MenuButton buttons[4] = {
         {GetHomeButtonBounds(0), "Play"},
-        {GetHomeButtonBounds(1), "How To Play"},
+        {GetHomeButtonBounds(1), "Guide"},
         {GetHomeButtonBounds(2), "About"},
         {GetHomeButtonBounds(3), "Exit"}
     };
@@ -239,7 +364,11 @@ static AppScreen UpdateHomeScreen(AppState *app) {
             GameSessionResult result = RunGameSession(app->assets.font, app->assets.useFont);
             return (result == GAME_SESSION_EXIT_APP) ? SCREEN_EXIT : SCREEN_HOME;
         }
-        if (app->homeSelection == 1) return SCREEN_HOW_TO_PLAY;
+        if (app->homeSelection == 1) {
+            Menu_SetHowToPlaySelection(0);
+            app->howToScroll = 0.0f;
+            return SCREEN_HOW_TO_PLAY;
+        }
         if (app->homeSelection == 2) return SCREEN_ABOUT;
         return SCREEN_EXIT;
     }
@@ -247,6 +376,11 @@ static AppScreen UpdateHomeScreen(AppState *app) {
     return SCREEN_HOME;
 }
 
+/* ======================
+Fungsi UpdateScrollScreen
+=======================
+Fungsi ini digunakan untuk memperbarui scroll screen.
+*/
 static AppScreen UpdateScrollScreen(float *scroll, Rectangle viewport, float contentHeight, Rectangle backButton, AppScreen current) {
     *scroll = UpdateScroll(*scroll, viewport.height, contentHeight);
     if (IsKeyPressed(KEY_BACKSPACE)) return SCREEN_HOME;
@@ -254,10 +388,40 @@ static AppScreen UpdateScrollScreen(float *scroll, Rectangle viewport, float con
     return current;
 }
 
+/* ======================
+Fungsi UpdateGuideScreen
+=======================
+Fungsi ini digunakan untuk memperbarui guide screen.
+*/
+static AppScreen UpdateGuideScreen(float *scroll, Rectangle viewport, Rectangle backButton) {
+    *scroll = UpdateScroll(*scroll, viewport.height, Menu_GetHowToPlayContentHeight());
+    if (IsKeyPressed(KEY_BACKSPACE)) return SCREEN_HOME;
+    if (Menu_ButtonPressed((MenuButton){backButton, "Back"})) return SCREEN_HOME;
+
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
+        Menu_CycleHowToPlaySelection(1);
+    }
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
+        Menu_CycleHowToPlaySelection(-1);
+    }
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Vector2 adjustedPoint = GetMousePosition();
+        adjustedPoint.y -= *scroll;
+        Menu_HandleHowToPlayClick(viewport, adjustedPoint);
+    }
+    return SCREEN_HOW_TO_PLAY;
+}
+
+/* ======================
+Fungsi App_Run
+=======================
+Fungsi ini digunakan untuk mengelola run.
+*/
 int App_Run(void) {
     AppState app = {0};
     MenuPageLayout page = {0};
 
+    // Inisialisasi window dan aset utama aplikasi.
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
     InitWindow(kScreenWidth, kScreenHeight, "Feeding Fish");
     SetTargetFPS(60);
@@ -274,12 +438,13 @@ int App_Run(void) {
         float time = (float)GetTime();
         page = Menu_CreateScrollableLayout();
 
+        // Proses input sesuai screen aktif sebelum tahap gambar.
         if (app.screen == SCREEN_WELCOME && UpdateWelcomeScreen()) {
             app.screen = SCREEN_HOME;
         } else if (app.screen == SCREEN_HOME) {
             app.screen = UpdateHomeScreen(&app);
         } else if (app.screen == SCREEN_HOW_TO_PLAY) {
-            app.screen = UpdateScrollScreen(&app.howToScroll, page.viewport, Menu_GetHowToPlayContentHeight(), page.backButton, SCREEN_HOW_TO_PLAY);
+            app.screen = UpdateGuideScreen(&app.howToScroll, page.viewport, page.backButton);
         } else if (app.screen == SCREEN_ABOUT) {
             app.screen = UpdateScrollScreen(&app.aboutScroll, page.viewport,
                 Menu_GetAboutContentHeight(app.assets.font, app.assets.useFont, page.viewport.width - 44.0f),
@@ -289,12 +454,13 @@ int App_Run(void) {
         BeginDrawing();
         ClearBackground(BLACK);
 
+        // Gambar screen aktif berdasarkan state aplikasi saat ini.
         if (app.screen == SCREEN_WELCOME) {
             DrawWelcomeScreen(&app, time);
         } else if (app.screen == SCREEN_HOME) {
             DrawHomeScreen(&app, time);
         } else if (app.screen == SCREEN_HOW_TO_PLAY) {
-            DrawCachedScrollablePage(&app, &s_howToChromeCache, page, "HOW TO PLAY", "Backspace atau tombol Back untuk kembali. Scroll dengan mouse atau tombol panah.");
+            DrawCachedScrollablePage(&app, &s_howToChromeCache, page, "GUIDE", "Use Left / Right or the object buttons to open each visualization page.");
             BeginScissorMode((int)page.viewport.x, (int)page.viewport.y, (int)page.viewport.width, (int)page.viewport.height);
             Menu_DrawHowToPlayContent(page.viewport, app.howToScroll, app.assets.font, app.assets.useFont, time);
             EndScissorMode();

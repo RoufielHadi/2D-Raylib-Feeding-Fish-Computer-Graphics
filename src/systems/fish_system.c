@@ -1,44 +1,98 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "fish_system.h"
 #include "collision.h"
 #include <float.h>
 #include <math.h>
 
+/* ======================
+Fungsi VecLen
+=======================
+Fungsi ini digunakan untuk menjalankan proses VecLen.
+*/
 static float VecLen(Vector2 v) {
     return sqrtf(v.x * v.x + v.y * v.y);
 }
 
+/* ======================
+Fungsi VecNorm
+=======================
+Fungsi ini digunakan untuk menjalankan proses VecNorm.
+*/
 static Vector2 VecNorm(Vector2 v) {
     float l = VecLen(v);
     if (l <= 0.0001f) return (Vector2){0.0f, 0.0f};
     return (Vector2){v.x / l, v.y / l};
 }
 
+/* ======================
+Fungsi LerpVec
+=======================
+Fungsi ini digunakan untuk menginterpolasi vec.
+*/
 static Vector2 LerpVec(Vector2 a, Vector2 b, float t) {
     return (Vector2){a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t};
 }
 
+/* ======================
+Fungsi VecSub
+=======================
+Fungsi ini digunakan untuk menjalankan proses VecSub.
+*/
 static Vector2 VecSub(Vector2 a, Vector2 b) {
     return (Vector2){a.x - b.x, a.y - b.y};
 }
 
+/* ======================
+Fungsi VecAdd
+=======================
+Fungsi ini digunakan untuk menjalankan proses VecAdd.
+*/
 static Vector2 VecAdd(Vector2 a, Vector2 b) {
     return (Vector2){a.x + b.x, a.y + b.y};
 }
 
+/* ======================
+Fungsi VecScale
+=======================
+Fungsi ini digunakan untuk menjalankan proses VecScale.
+*/
 static Vector2 VecScale(Vector2 v, float scale) {
     return (Vector2){v.x * scale, v.y * scale};
 }
 
+/* ======================
+Fungsi ClampFloat
+=======================
+Fungsi ini digunakan untuk membatasi float.
+*/
 static float ClampFloat(float value, float minValue, float maxValue) {
     if (value < minValue) return minValue;
     if (value > maxValue) return maxValue;
     return value;
 }
 
+/* ======================
+Fungsi RandomFloat
+=======================
+Fungsi ini digunakan untuk menjalankan proses RandomFloat.
+*/
 static float RandomFloat(float minValue, float maxValue) {
     return minValue + ((float)GetRandomValue(0, 10000) / 10000.0f) * (maxValue - minValue);
 }
 
+/* ======================
+Fungsi RandomSwimPoint
+=======================
+Fungsi ini digunakan untuk menjalankan proses RandomSwimPoint.
+*/
 static Vector2 RandomSwimPoint(void) {
     float marginX = 90.0f;
     float top = 140.0f;
@@ -49,11 +103,21 @@ static Vector2 RandomSwimPoint(void) {
     };
 }
 
+/* ======================
+Fungsi ChooseNewTarget
+=======================
+Fungsi ini digunakan untuk menjalankan proses ChooseNewTarget.
+*/
 static void ChooseNewTarget(Vector2 *target, float *timer, float minDelay, float maxDelay) {
     *target = RandomSwimPoint();
     *timer = RandomFloat(minDelay, maxDelay);
 }
 
+/* ======================
+Fungsi AvoidWalls
+=======================
+Fungsi ini digunakan untuk menjalankan proses AvoidWalls.
+*/
 static void AvoidWalls(Vector2 pos, Vector2 *targetVel, float push) {
     float left = 70.0f;
     float right = (float)GetScreenWidth() - 70.0f;
@@ -66,6 +130,11 @@ static void AvoidWalls(Vector2 pos, Vector2 *targetVel, float push) {
     if (pos.y > bottom) targetVel->y -= push * 0.7f;
 }
 
+/* ======================
+Fungsi ClampToAquarium
+=======================
+Fungsi ini digunakan untuk membatasi to aquarium.
+*/
 static void ClampToAquarium(Vector2 *pos, Vector2 *vel) {
     float minX = 55.0f;
     float maxX = (float)GetScreenWidth() - 55.0f;
@@ -90,17 +159,32 @@ static void ClampToAquarium(Vector2 *pos, Vector2 *vel) {
     }
 }
 
+/* ======================
+Fungsi UpdateDirection
+=======================
+Fungsi ini digunakan untuk memperbarui direction.
+*/
 static void UpdateDirection(float *dir, Vector2 vel) {
     if (fabsf(vel.x) > 0.5f) {
         *dir = (vel.x >= 0.0f) ? 1.0f : -1.0f;
     }
 }
 
+/* ======================
+Fungsi UpdateDeathMotion
+=======================
+Fungsi ini digunakan untuk memperbarui death motion.
+*/
 static void UpdateDeathMotion(float *flipAngle, Vector2 *pos, float dt) {
     *flipAngle = ClampFloat(*flipAngle + dt * 3.0f, 0.0f, PI);
     pos->y -= 14.0f * dt;
 }
 
+/* ======================
+Fungsi SeparationForceGuppy
+=======================
+Fungsi ini digunakan untuk menjalankan proses SeparationForceGuppy.
+*/
 static Vector2 SeparationForceGuppy(const Guppy *self, const Guppy *guppies, int count) {
     Vector2 force = {0.0f, 0.0f};
     for (int i = 0; i < count; i++) {
@@ -114,6 +198,11 @@ static Vector2 SeparationForceGuppy(const Guppy *self, const Guppy *guppies, int
     return force;
 }
 
+/* ======================
+Fungsi SeparationForceCarnivore
+=======================
+Fungsi ini digunakan untuk menjalankan proses SeparationForceCarnivore.
+*/
 static Vector2 SeparationForceCarnivore(const Carnivore *self, const Carnivore *arr, int count) {
     Vector2 force = {0.0f, 0.0f};
     for (int i = 0; i < count; i++) {
@@ -127,6 +216,11 @@ static Vector2 SeparationForceCarnivore(const Carnivore *self, const Carnivore *
     return force;
 }
 
+/* ======================
+Fungsi SeparationForceUltravore
+=======================
+Fungsi ini digunakan untuk menjalankan proses SeparationForceUltravore.
+*/
 static Vector2 SeparationForceUltravore(const Ultravore *self, const Ultravore *arr, int count) {
     Vector2 force = {0.0f, 0.0f};
     for (int i = 0; i < count; i++) {
@@ -140,6 +234,11 @@ static Vector2 SeparationForceUltravore(const Ultravore *self, const Ultravore *
     return force;
 }
 
+/* ======================
+Fungsi UpdateGuppies
+=======================
+Fungsi ini digunakan untuk memperbarui guppies.
+*/
 void UpdateGuppies(Guppy *guppies, int guppyCount, Food *foods, int foodCount, float dt) {
     const float hungerRate = 1.0f;
     const float hungerThreshold = 5.0f;
@@ -151,6 +250,7 @@ void UpdateGuppies(Guppy *guppies, int guppyCount, Food *foods, int foodCount, f
     const float steerLerp = 0.10f;
     const float eatDist = 18.0f;
 
+    // Fase awal mengatur status lapar dan animasi dasar tiap ikan cere.
     for (int i = 0; i < guppyCount; i++) {
         Guppy *g = &guppies[i];
         if (!g->active) continue;
@@ -263,6 +363,11 @@ void UpdateGuppies(Guppy *guppies, int guppyCount, Food *foods, int foodCount, f
     }
 }
 
+/* ======================
+Fungsi UpdateCarnivores
+=======================
+Fungsi ini digunakan untuk memperbarui carnivores.
+*/
 void UpdateCarnivores(Carnivore *carnivores, int carnivoreCount, Guppy *guppies, int guppyCount, float dt) {
     const float hungerRate = 1.0f;
     const float hungerThreshold = 10.0f;
@@ -363,6 +468,11 @@ void UpdateCarnivores(Carnivore *carnivores, int carnivoreCount, Guppy *guppies,
     }
 }
 
+/* ======================
+Fungsi UpdateUltravoids
+=======================
+Fungsi ini digunakan untuk memperbarui ultravoids.
+*/
 void UpdateUltravoids(Ultravore *ultravoids, int ultravoreCount, Carnivore *carnivores, int carnivoreCount, float dt) {
     const float hungerRate = 1.0f;
     const float hungerThreshold = 15.0f;
@@ -462,4 +572,3 @@ void UpdateUltravoids(Ultravore *ultravoids, int ultravoreCount, Carnivore *carn
         UpdateDirection(&u->dir, u->vel);
     }
 }
-

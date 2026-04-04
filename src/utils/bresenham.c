@@ -1,7 +1,21 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "bresenham.h"
 #include <math.h>
 #include <stdlib.h>
 
+/* ======================
+Fungsi DrawHorizontalPixels
+=======================
+Fungsi ini digunakan untuk menggambar horizontal pixels.
+*/
 static void DrawHorizontalPixels(int x1, int x2, int y, Color color) {
     if (x2 < x1) {
         int tmp = x1;
@@ -13,6 +27,11 @@ static void DrawHorizontalPixels(int x1, int x2, int y, Color color) {
     }
 }
 
+/* ======================
+Fungsi DrawVerticalPixels
+=======================
+Fungsi ini digunakan untuk menggambar vertical pixels.
+*/
 static void DrawVerticalPixels(int x, int y1, int y2, Color color) {
     if (y2 < y1) {
         int tmp = y1;
@@ -24,6 +43,11 @@ static void DrawVerticalPixels(int x, int y1, int y2, Color color) {
     }
 }
 
+/* ======================
+Fungsi BresenhamLine
+=======================
+Fungsi ini digunakan untuk menjalankan proses BresenhamLine.
+*/
 void BresenhamLine(int x1, int y1, int x2, int y2, Color color) {
     if (y1 == y2) {
         DrawHorizontalPixels(x1, x2, y1, color);
@@ -47,13 +71,18 @@ void BresenhamLine(int x1, int y1, int x2, int y2, Color color) {
     }
 }
 
+/* ======================
+Fungsi Bres_DashedLine
+=======================
+Fungsi ini digunakan untuk menjalankan proses Bres_DashedLine.
+*/
 void Bres_DashedLine(int x1, int y1, int x2, int y2,
                      int dashLen, int gapLen, Color color) {
     int dx = abs(x2-x1), dy = abs(y2-y1);
     int sx = (x1 < x2) ? 1 : -1;
     int sy = (y1 < y2) ? 1 : -1;
     int err = dx - dy;
-    
+
     int counter = 0;
     int drawing = 1;
     int current_limit = dashLen;
@@ -62,13 +91,13 @@ void Bres_DashedLine(int x1, int y1, int x2, int y2,
         if (drawing) {
             DrawPixel(x1, y1, color);
         }
-        
+
         if (x1 == x2 && y1 == y2) break;
-        
+
         int e2 = 2*err;
         if (e2 > -dy) { err -= dy; x1 += sx; }
         if (e2 <  dx) { err += dx; y1 += sy; }
-        
+
         counter++;
         if (counter >= current_limit) {
             counter = 0;
@@ -78,6 +107,11 @@ void Bres_DashedLine(int x1, int y1, int x2, int y2,
     }
 }
 
+/* ======================
+Fungsi Bres_ThickLine
+=======================
+Fungsi ini digunakan untuk menjalankan proses Bres_ThickLine.
+*/
 void Bres_ThickLine(int x1, int y1, int x2, int y2, int thick, Color color) {
     float dx = (float)(x2-x1), dy = (float)(y2-y1);
     float len = sqrtf(dx*dx + dy*dy);
@@ -90,12 +124,17 @@ void Bres_ThickLine(int x1, int y1, int x2, int y2, int thick, Color color) {
     }
 }
 
+/* ======================
+Fungsi Bres_DashDotLine
+=======================
+Fungsi ini digunakan untuk menjalankan proses Bres_DashDotLine.
+*/
 void Bres_DashDotLine(int x1, int y1, int x2, int y2, Color color) {
     int dx = abs(x2-x1), dy = abs(y2-y1);
     int sx = (x1 < x2) ? 1 : -1;
     int sy = (y1 < y2) ? 1 : -1;
     int err = dx - dy;
-    
+
     int phases[] = {18, 5, 5, 5};
     int drawPh[] = {1, 0, 1, 0};
     int phase = 0;
@@ -105,13 +144,13 @@ void Bres_DashDotLine(int x1, int y1, int x2, int y2, Color color) {
         if (drawPh[phase % 4]) {
             DrawPixel(x1, y1, color);
         }
-        
+
         if (x1 == x2 && y1 == y2) break;
-        
+
         int e2 = 2*err;
         if (e2 > -dy) { err -= dy; x1 += sx; }
         if (e2 <  dx) { err += dx; y1 += sy; }
-        
+
         counter++;
         if (counter >= phases[phase % 4]) {
             counter = 0;

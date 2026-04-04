@@ -1,22 +1,51 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "button.h"
 #include "../utils/primitives.h"
 
 static Font s_uiFont;
 static bool s_fontLoaded = false;
 
+/* ======================
+Fungsi UI_SetSharedFont
+=======================
+Fungsi ini digunakan untuk mengatur shared font.
+*/
 void UI_SetSharedFont(Font font, bool loaded) {
 	s_uiFont = font;
 	s_fontLoaded = loaded;
 }
 
+/* ======================
+Fungsi UI_GetSharedFont
+=======================
+Fungsi ini digunakan untuk mengambil shared font.
+*/
 Font UI_GetSharedFont(void) {
 	return s_uiFont;
 }
 
+/* ======================
+Fungsi UI_HasSharedFont
+=======================
+Fungsi ini digunakan untuk menjalankan proses UI_HasSharedFont.
+*/
 bool UI_HasSharedFont(void) {
 	return s_fontLoaded;
 }
 
+/* ======================
+Fungsi DrawButton
+=======================
+Fungsi ini digunakan untuk menggambar button.
+*/
 void DrawButton(Rectangle r, const char *label) {
 	Vector2 mp = GetMousePosition();
 	bool hover = CheckCollisionPointRec(mp, r);

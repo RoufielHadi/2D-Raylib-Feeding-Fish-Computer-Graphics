@@ -1,3 +1,12 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "draw_ui.h"
 #include "draw_fish.h"
 #include "../ui/ui.h"
@@ -9,6 +18,11 @@ static bool s_headerFishCacheReady = false;
 static int s_headerFishCacheWidth = 0;
 static int s_headerFishCacheHeight = 0;
 
+/* ======================
+Fungsi DrawUIText
+=======================
+Fungsi ini digunakan untuk menggambar uitext.
+*/
 static void DrawUIText(const char *text, Vector2 pos, float size, Color color) {
 	if (UI_HasSharedFont()) {
 		DrawTextEx(UI_GetSharedFont(), text, pos, size, 1.0f, color);
@@ -17,6 +31,11 @@ static void DrawUIText(const char *text, Vector2 pos, float size, Color color) {
 	}
 }
 
+/* ======================
+Fungsi DrawCenteredUIText
+=======================
+Fungsi ini digunakan untuk menggambar centered uitext.
+*/
 static void DrawCenteredUIText(const char *text, Rectangle rect, float size, Color color, float offsetY) {
 	if (UI_HasSharedFont()) {
 		Vector2 textSize = MeasureTextEx(UI_GetSharedFont(), text, size, 1.0f);
@@ -30,6 +49,11 @@ static void DrawCenteredUIText(const char *text, Rectangle rect, float size, Col
 	}
 }
 
+/* ======================
+Fungsi EnsureHeaderFishCache
+=======================
+Fungsi ini digunakan untuk memastikan header fish cache.
+*/
 static void EnsureHeaderFishCache(void) {
 	const int width = 540;
 	const int height = 72;
@@ -47,33 +71,43 @@ static void EnsureHeaderFishCache(void) {
 
 		Guppy guppy = {0};
 		guppy.active = true;
-		guppy.scale = 0.66f;
+		guppy.scale = 0.47f;
 		guppy.dir = 1.0f;
-		guppy.pos = (Vector2){92.0f, 36.0f};
-		DrawGuppyPreview(&guppy, 0.0f);
+	guppy.pos = (Vector2){86.0f, 40.0f};
+	DrawGuppyPreview(&guppy, 0.0f);
 
 		Carnivore carnivore = {0};
 		carnivore.active = true;
-		carnivore.scale = 0.60f;
+		carnivore.scale = 0.73f;
 		carnivore.dir = 1.0f;
-		carnivore.pos = (Vector2){272.0f, 36.0f};
-		DrawPiranhaPreview(&carnivore, 0.0f);
+	carnivore.pos = (Vector2){265.0f, 40.0f};
+	DrawPiranhaPreview(&carnivore, 0.0f);
 
 		Ultravore ultravore = {0};
 		ultravore.active = true;
-		ultravore.scale = 0.48f;
+		ultravore.scale = 0.86f;
 		ultravore.dir = 1.0f;
-		ultravore.pos = (Vector2){452.0f, 36.0f};
-		DrawUltravorePreview(&ultravore, 0.0f);
+	ultravore.pos = (Vector2){444.0f, 42.0f};
+	DrawUltravorePreview(&ultravore, 0.0f);
 
 		EndTextureMode();
 	}
 }
 
+/* ======================
+Fungsi WarmHeaderUICache
+=======================
+Fungsi ini digunakan untuk menyiapkan header uicache.
+*/
 void WarmHeaderUICache(void) {
 	EnsureHeaderFishCache();
 }
 
+/* ======================
+Fungsi DrawFishSpawnCard
+=======================
+Fungsi ini digunakan untuk menggambar fish spawn card.
+*/
 static void DrawFishSpawnCard(Rectangle r, int kind, const char *label) {
 	Vector2 mp = GetMousePosition();
 	bool hover = CheckCollisionPointRec(mp, r);
@@ -82,7 +116,7 @@ static void DrawFishSpawnCard(Rectangle r, int kind, const char *label) {
 	Color border = hover ? (Color){255, 236, 201, 255} : (Color){96, 62, 34, 255};
 	Color labelColor = (Color){42, 27, 15, 255};
 	Rectangle innerShell = {r.x + 4.0f, r.y + 4.0f, r.width - 8.0f, r.height - 8.0f};
-	Rectangle labelBand = {r.x + 8.0f, r.y + r.height - 23.0f, r.width - 16.0f, 15.0f};
+	Rectangle labelBand = {r.x + 8.0f, r.y + r.height - 25.0f, r.width - 16.0f, 17.0f};
 
 	DrawRectangleRounded(r, 0.18f, 10, outer);
 	DrawRectangleRounded(innerShell, 0.18f, 10, inner);
@@ -96,9 +130,14 @@ static void DrawFishSpawnCard(Rectangle r, int kind, const char *label) {
 	DrawTexturePro(s_headerFishCache.texture, src, dst, (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
 
 	DrawRectangleRounded(labelBand, 0.45f, 8, ColorAlpha((Color){255, 248, 236, 255}, 0.88f));
-	DrawCenteredUIText(label, r, 14.0f, labelColor, 58.0f);
+	DrawCenteredUIText(label, r, 13.0f, labelColor, 57.0f);
 }
 
+/* ======================
+Fungsi DrawActionCard
+=======================
+Fungsi ini digunakan untuk menggambar action card.
+*/
 static void DrawActionCard(Rectangle r, const char *title, const char *subtitle, Color fill, Color accent, Color textColor) {
 	Vector2 mp = GetMousePosition();
 	bool hover = CheckCollisionPointRec(mp, r);
@@ -114,6 +153,11 @@ static void DrawActionCard(Rectangle r, const char *title, const char *subtitle,
 	DrawCenteredUIText(subtitle, r, 11.0f, ColorAlpha(textColor, 0.88f), 41.0f);
 }
 
+/* ======================
+Fungsi DrawUI
+=======================
+Fungsi ini digunakan untuk menggambar ui.
+*/
 void DrawUI(const Guppy *g, const Carnivore *c, const Ultravore *u) {
 	(void)g;
 	(void)c;
@@ -133,15 +177,15 @@ void DrawUI(const Guppy *g, const Carnivore *c, const Ultravore *u) {
 	DrawRectangleRounded(rightGroup, 0.14f, 10, ColorAlpha((Color){63, 41, 28, 255}, 0.34f));
 	DrawRectangleRounded(centerInfo, 0.16f, 10, ColorAlpha((Color){245, 235, 220, 255}, 0.14f));
 	DrawRectangleRoundedLinesEx(centerInfo, 0.16f, 10, 1.0f, ColorAlpha((Color){255, 231, 197, 255}, 0.18f));
-	DrawUIText("KONTROL AQUARIUM", (Vector2){centerInfo.x + 18.0f, centerInfo.y + 14.0f}, 18.0f, (Color){249, 239, 219, 255});
-	DrawUIText("Klik kartu untuk tambah ikan, klik area air untuk memberi makan.", (Vector2){centerInfo.x + 18.0f, centerInfo.y + 39.0f}, 12.0f, ColorAlpha((Color){248, 240, 227, 255}, 0.90f));
+	DrawUIText("KONTROL AQUARIUM", (Vector2){centerInfo.x + 18.0f, centerInfo.y + 14.0f}, 17.0f, (Color){249, 239, 219, 255});
+	DrawUIText("Cere kecil, lele sedang, toman jumbo. Klik air untuk jatuhkan pelet.", (Vector2){centerInfo.x + 18.0f, centerInfo.y + 39.0f}, 11.0f, ColorAlpha((Color){248, 240, 227, 255}, 0.90f));
 
-	DrawFishSpawnCard(rects[0], 0, "Guppy");
-	DrawFishSpawnCard(rects[1], 1, "Carnivore");
-	DrawFishSpawnCard(rects[2], 2, "Ultravore");
+	DrawFishSpawnCard(rects[0], 0, "Cere");
+	DrawFishSpawnCard(rects[1], 1, "Lele");
+	DrawFishSpawnCard(rects[2], 2, "Toman");
 	DrawActionCard(rects[3], "RESET", "Aquarium", (Color){171, 60, 46, 255}, (Color){255, 210, 180, 255}, (Color){255, 247, 238, 255});
-	DrawActionCard(rects[4], "ATUR", "Volume", (Color){67, 100, 131, 255}, (Color){179, 223, 255, 255}, (Color){246, 250, 255, 255});
-	DrawActionCard(rects[5], "KEMBALI", "Home", (Color){62, 124, 96, 255}, (Color){204, 255, 219, 255}, (Color){245, 255, 247, 255});
+	DrawActionCard(rects[4], "VOLUME", "Audio", (Color){67, 100, 131, 255}, (Color){179, 223, 255, 255}, (Color){246, 250, 255, 255});
+	DrawActionCard(rects[5], "KEMBALI", "Menu", (Color){62, 124, 96, 255}, (Color){204, 255, 219, 255}, (Color){245, 255, 247, 255});
 
 	if (UI_IsVolumeOpen()) {
 		Rectangle sr = UI_GetVolumeSliderRect();

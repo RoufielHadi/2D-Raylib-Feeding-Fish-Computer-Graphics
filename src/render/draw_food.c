@@ -1,3 +1,12 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "draw_food.h"
 #include "../utils/primitives.h"
 
@@ -11,7 +20,13 @@ static const int kFoodBodyW = 40;
 static const int kFoodBodyH = 24;
 static const int kFoodShadowW = 40;
 static const int kFoodShadowH = 20;
+static const float kFoodDrawScale = 0.5f;
 
+/* ======================
+Fungsi DrawFoodBodySprite
+=======================
+Fungsi ini digunakan untuk menggambar food body sprite.
+*/
 static void DrawFoodBodySprite(Vector2 center) {
 	float w = 12.0f;
 	float h = 6.0f;
@@ -53,6 +68,11 @@ static void DrawFoodBodySprite(Vector2 center) {
 	DrawLineEx(p8, p7, 1.2f, (Color){80, 80, 80, 210});
 }
 
+/* ======================
+Fungsi EnsureFoodSpriteCache
+=======================
+Fungsi ini digunakan untuk memastikan food sprite cache.
+*/
 static void EnsureFoodSpriteCache(void) {
 	if (s_foodSpriteReady) return;
 
@@ -72,10 +92,20 @@ static void EnsureFoodSpriteCache(void) {
 	s_foodSpriteReady = true;
 }
 
+/* ======================
+Fungsi WarmFoodSpriteCache
+=======================
+Fungsi ini digunakan untuk menyiapkan food sprite cache.
+*/
 void WarmFoodSpriteCache(void) {
 	EnsureFoodSpriteCache();
 }
 
+/* ======================
+Fungsi DrawFood
+=======================
+Fungsi ini digunakan untuk menggambar food.
+*/
 void DrawFood(const Food *f) {
 	if (!f || !f->active) return;
 
@@ -83,10 +113,10 @@ void DrawFood(const Food *f) {
 
 	Rectangle shadowSrc = {0.0f, 0.0f, (float)kFoodShadowW, (float)-kFoodShadowH};
 	Rectangle shadowDst = {
-		f->pos.x - kFoodShadowW * 0.5f,
-		f->pos.y + 8.0f - kFoodShadowH * 0.5f,
-		(float)kFoodShadowW,
-		(float)kFoodShadowH
+		f->pos.x - kFoodShadowW * kFoodDrawScale * 0.5f,
+		f->pos.y + 5.0f - kFoodShadowH * kFoodDrawScale * 0.5f,
+		(float)kFoodShadowW * kFoodDrawScale,
+		(float)kFoodShadowH * kFoodDrawScale
 	};
 	DrawTexturePro(s_foodShadowCache.texture, shadowSrc, shadowDst, (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
 
@@ -94,12 +124,19 @@ void DrawFood(const Food *f) {
 	Rectangle bodyDst = {
 		f->pos.x,
 		f->pos.y,
-		(float)kFoodBodyW,
-		(float)kFoodBodyH
+		(float)kFoodBodyW * kFoodDrawScale,
+		(float)kFoodBodyH * kFoodDrawScale
 	};
-	DrawTexturePro(s_foodBodyCache.texture, bodySrc, bodyDst, (Vector2){kFoodBodyW * 0.5f, kFoodBodyH * 0.5f}, f->rotation, WHITE);
+	DrawTexturePro(s_foodBodyCache.texture, bodySrc, bodyDst,
+		(Vector2){kFoodBodyW * kFoodDrawScale * 0.5f, kFoodBodyH * kFoodDrawScale * 0.5f},
+		f->rotation, WHITE);
 }
 
+/* ======================
+Fungsi DrawAllFood
+=======================
+Fungsi ini digunakan untuk menggambar all food.
+*/
 void DrawAllFood(const Food *foods, int count) {
 	if (!foods) return;
 	for (int i = 0; i < count; i++) {

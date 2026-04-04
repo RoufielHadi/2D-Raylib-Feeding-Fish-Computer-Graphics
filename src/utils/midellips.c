@@ -1,5 +1,19 @@
+/*
+Author: Roufiel Hadi
+NIM: 241524028
+Kelas: 1A
+Prodi: Sarjana Terapan Teknik Informatika
+Jurusan: Teknik Komputer dan Informatika
+Politeknik Negeri Bandung
+*/
+
 #include "midellips.h"
 
+/* ======================
+Fungsi DrawEllipsePoints
+=======================
+Fungsi ini digunakan untuk menggambar ellipse points.
+*/
 static void DrawEllipsePoints(int cx, int cy, int x, int y, Color color) {
     DrawPixel(cx + x, cy + y, color);
     DrawPixel(cx - x, cy + y, color);
@@ -7,6 +21,11 @@ static void DrawEllipsePoints(int cx, int cy, int x, int y, Color color) {
     DrawPixel(cx - x, cy - y, color);
 }
 
+/* ======================
+Fungsi MidpointEllipse
+=======================
+Fungsi ini digunakan untuk menjalankan proses MidpointEllipse.
+*/
 void MidpointEllipse(int cx, int cy, int rx, int ry, Color color) {
     if (rx == 0 || ry == 0) return;
 
