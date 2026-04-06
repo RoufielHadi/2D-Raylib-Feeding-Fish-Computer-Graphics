@@ -197,6 +197,15 @@ static void DrawGuideBubblePreview(Vector2 center, float radius, unsigned char a
 }
 
 /* ======================
+Fungsi DrawMiniSeaweedCluster
+=======================
+Fungsi ini digunakan untuk menggambar cluster rumput laut mini.
+*/
+static void DrawMiniSeaweedCluster(Rectangle area, float time, int variant, bool withBubbles) {
+    DrawSeaweedClusterRect(area, time, variant, withBubbles, true);
+}
+
+/* ======================
 Fungsi DrawPartPreview
 =======================
 Fungsi ini digunakan untuk menggambar part preview.
@@ -311,10 +320,10 @@ static void DrawPartPreview(Rectangle box, ShowcaseType type, int index) {
             if (index == 2) DrawCircle((int)center.x - 6, (int)center.y - 6, 6, palette.highlight);
         }
     } else if (type == SHOWCASE_SEAWEED) {
-        if (index == 0) DrawLineBezier((Vector2){center.x - 10, center.y + 22}, (Vector2){center.x, center.y - 26}, 7.0f, (Color){30, 124, 90, 255});
-        if (index == 1) DrawLineBezier((Vector2){center.x, center.y + 22}, (Vector2){center.x + 14, center.y - 34}, 5.0f, (Color){38, 144, 96, 255});
-        if (index == 2) DrawLineBezier((Vector2){center.x + 10, center.y + 22}, (Vector2){center.x + 26, center.y - 18}, 4.0f, (Color){45, 166, 110, 255});
-        if (index == 3) DrawCircle((int)(center.x + 18), (int)(center.y - 8), 6, ColorAlpha((Color){84, 196, 136, 255}, 0.35f));
+        Rectangle inner = {box.x + 6.0f, box.y + 8.0f, box.width - 12.0f, box.height - 16.0f};
+        BeginScissorMode((int)inner.x, (int)inner.y, (int)inner.width, (int)inner.height);
+        DrawMiniSeaweedCluster(inner, 0.4f + index * 0.35f, index, index == 3);
+        EndScissorMode();
     } else if (type == SHOWCASE_CORAL) {
         if (index == 0) DrawEllipse((int)center.x, (int)center.y + 8, 34, 20, (Color){93, 70, 134, 255});
         if (index == 1) DrawEllipse((int)center.x - 5, (int)center.y + 10, 28, 14, (Color){69, 51, 106, 255});
@@ -424,7 +433,9 @@ static void DrawShowcasePreview(Rectangle area, ShowcaseType type, float time) {
         DrawGuideBubblePreview((Vector2){scene.x + scene.width * 0.58f, scene.y + scene.height * 0.46f}, 20.0f, 128);
         DrawGuideBubblePreview((Vector2){scene.x + scene.width * 0.68f, scene.y + scene.height * 0.68f}, 13.0f, 118);
     } else if (type == SHOWCASE_SEAWEED) {
-        DrawSeaweed((Vector2){scene.x + scene.width * 0.34f, scene.y + scene.height + 6.0f}, 0.0f);
+        BeginScissorMode((int)scene.x, (int)scene.y, (int)scene.width, (int)scene.height);
+        DrawSeaweedClusterRect(scene, time * 0.8f, 2, true, false);
+        EndScissorMode();
     } else if (type == SHOWCASE_CORAL) {
         DrawCoral((Vector2){scene.x + scene.width * 0.48f, scene.y + scene.height * 0.72f});
     } else if (type == SHOWCASE_HELMET) {
@@ -597,7 +608,27 @@ Fungsi DrawAboutBody
 =======================
 Fungsi ini digunakan untuk menggambar about body.
 */
-static void DrawAboutBody(Rectangle bounds, Font font, bool useFont, Texture2D photo, bool hasPhoto) {
+static void DrawAboutSeaweedDecor(Rectangle area, float time) {
+    Rectangle pond = {area.x, area.y, area.width, area.height};
+    DrawRectangleRounded(pond, 0.18f, 10, ColorAlpha((Color){215, 239, 248, 255}, 0.82f));
+    DrawRectangleRoundedLinesEx(pond, 0.18f, 10, 1.0f, ColorAlpha((Color){72, 125, 151, 255}, 0.30f));
+
+    Rectangle water = {pond.x + 8.0f, pond.y + 8.0f, pond.width - 16.0f, pond.height - 16.0f};
+    DrawWaterBackgroundRect(water);
+    DrawRectangleGradientV((int)water.x, (int)(water.y + water.height * 0.72f), (int)water.width, (int)(water.height * 0.28f),
+        ColorAlpha((Color){30, 76, 98, 255}, 0.00f), ColorAlpha((Color){18, 48, 68, 255}, 0.18f));
+
+    BeginScissorMode((int)water.x, (int)water.y, (int)water.width, (int)water.height);
+    DrawSeaweedClusterRect(water, time * 0.9f, 1, true, false);
+    EndScissorMode();
+}
+
+/* ======================
+Fungsi DrawAboutBody
+=======================
+Fungsi ini digunakan untuk menggambar about body.
+*/
+static void DrawAboutBody(Rectangle bounds, Font font, bool useFont, Texture2D photo, bool hasPhoto, float time) {
     MenuPalette palette = Menu_GetPalette();
     float y = bounds.y;
     Rectangle introPanel = {bounds.x + 10, y, bounds.width - 40, 206};
@@ -654,9 +685,10 @@ static void DrawAboutBody(Rectangle bounds, Font font, bool useFont, Texture2D p
 
     Menu_DrawPanel(storyPanel, kSectionFill, ColorAlpha(palette.panelStroke, 0.42f));
     Menu_DrawText(font, useFont, "Latar Singkat", (Vector2){storyPanel.x + 18, storyPanel.y + 16}, 24.0f, 1.0f, palette.text);
+    DrawAboutSeaweedDecor((Rectangle){storyPanel.x + storyPanel.width - 214.0f, storyPanel.y + 54.0f, 174.0f, 136.0f}, time + 1.2f);
     Menu_DrawWrappedText(font, useFont,
         "Roufiel Hadi merupakan mahasiswa D4 Teknik Informatika Politeknik Negeri Bandung yang berfokus pada pengembangan perangkat lunak, visual interaktif, dan pemanfaatan teknologi untuk penyelesaian proyek akademik. Dalam pengerjaan Feeding Fish, penulis menempatkan aspek ketelitian visual, kerapian struktur program, dan kemampuan menerjemahkan konsep ke implementasi sebagai bagian dari penguatan portofolio pribadi dan pengembangan kompetensi profesional.",
-        (Rectangle){storyPanel.x + 18, storyPanel.y + 54, storyPanel.width - 36, 156}, 16.0f, 1.0f, palette.textSoft);
+        (Rectangle){storyPanel.x + 18, storyPanel.y + 54, storyPanel.width - 250, 156}, 16.0f, 1.0f, palette.textSoft);
 }
 
 /* ======================
@@ -740,11 +772,10 @@ Fungsi Menu_DrawAboutContent
 Fungsi ini digunakan untuk mengelola draw about content.
 */
 void Menu_DrawAboutContent(Rectangle bounds, float scroll, Font font, bool useFont, Texture2D photo, bool hasPhoto, float time) {
-    (void)time;
     DrawAboutBody((Rectangle){
         bounds.x,
         bounds.y + scroll,
         bounds.width,
         Menu_GetAboutContentHeight(font, useFont, bounds.width - 44.0f)
-    }, font, useFont, photo, hasPhoto);
+    }, font, useFont, photo, hasPhoto, time);
 }

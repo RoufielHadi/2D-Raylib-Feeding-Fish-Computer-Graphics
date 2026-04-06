@@ -8,6 +8,7 @@ Politeknik Negeri Bandung
 */
 
 #include "render.h"
+#include <math.h>
 #include <stddef.h>
 
 static RenderTexture2D s_environmentCache = {0};
@@ -105,6 +106,75 @@ static float FishDepthKeyU(const Ultravore *u) {
 	return u->pos.y + u->depth * 40.0f;
 }
 
+/* ======================
+Fungsi WireLen
+=======================
+Fungsi ini digunakan untuk menghitung panjang vector.
+*/
+static float WireLen(Vector2 v) {
+	return sqrtf(v.x * v.x + v.y * v.y);
+}
+
+/* ======================
+Fungsi WireNorm
+=======================
+Fungsi ini digunakan untuk menormalkan vector.
+*/
+static Vector2 WireNorm(Vector2 v, float dir) {
+	float len = WireLen(v);
+	if (len <= 0.001f) return (Vector2){dir >= 0.0f ? 1.0f : -1.0f, 0.0f};
+	return (Vector2){v.x / len, v.y / len};
+}
+
+/* ======================
+Fungsi DrawFishWireShape
+=======================
+Fungsi ini digunakan untuk menggambar wireframe ikan sederhana.
+*/
+static void DrawFishWireShape(Vector2 pos, Vector2 vel, float width, float height, float dir, Color color) {
+	Vector2 heading = WireNorm(vel, dir);
+	Vector2 nose = {pos.x + heading.x * width * 0.52f, pos.y + heading.y * width * 0.52f};
+	DrawEllipseLines((int)pos.x, (int)pos.y, width * 0.5f, height * 0.5f, color);
+	DrawLineEx(pos, nose, 1.2f, color);
+	DrawCircleV(nose, 2.0f, color);
+}
+
+/* ======================
+Fungsi DrawWireframeOverlay
+=======================
+Fungsi ini digunakan untuk menggambar overlay wireframe.
+*/
+static void DrawWireframeOverlay(const Guppy *guppies, int guppyCount,
+	const Carnivore *carnivores, int carnivoreCount,
+	const Ultravore *ultravores, int ultravoreCount,
+	const Food *foods, int foodCount,
+	const Bubble *bubbles, int bubbleCount) {
+	Color line = ColorAlpha((Color){226, 245, 255, 255}, 0.72f);
+	DrawRectangleLinesEx((Rectangle){50.0f, 108.0f, (float)GetScreenWidth() - 100.0f, (float)GetScreenHeight() - 200.0f},
+		1.4f, ColorAlpha((Color){210, 236, 255, 255}, 0.50f));
+
+	for (int i = 0; i < guppyCount; i++) {
+		if (!guppies[i].active) continue;
+		DrawFishWireShape(guppies[i].pos, guppies[i].vel, 46.0f * guppies[i].scale, 20.0f * guppies[i].scale, guppies[i].dir, line);
+	}
+	for (int i = 0; i < carnivoreCount; i++) {
+		if (!carnivores[i].active) continue;
+		DrawFishWireShape(carnivores[i].pos, carnivores[i].vel, 90.0f * carnivores[i].scale, 28.0f * carnivores[i].scale, carnivores[i].dir, line);
+	}
+	for (int i = 0; i < ultravoreCount; i++) {
+		if (!ultravores[i].active) continue;
+		DrawFishWireShape(ultravores[i].pos, ultravores[i].vel, 132.0f * ultravores[i].scale, 38.0f * ultravores[i].scale, ultravores[i].dir, line);
+	}
+	for (int i = 0; i < foodCount; i++) {
+		if (!foods[i].active) continue;
+		DrawRectangleLinesEx((Rectangle){foods[i].pos.x - 4.0f, foods[i].pos.y - 3.0f, 8.0f, 6.0f}, 1.0f, ColorAlpha((Color){255, 230, 192, 255}, 0.62f));
+	}
+	for (int i = 0; i < bubbleCount; i++) {
+		if (!bubbles[i].active) continue;
+		DrawCircleLines((int)bubbles[i].pos.x, (int)bubbles[i].pos.y, bubbles[i].radius, ColorAlpha((Color){223, 247, 255, 255}, 0.60f));
+	}
+}
+
 typedef struct {
 	float depthKey;
 	float animTime;
@@ -156,7 +226,8 @@ void RenderAll(const Guppy *guppies, int guppyCount,
 			   const Ultravore *ultravores, int ultravoreCount,
 			   const Food *foods, int foodCount,
 			   const Bubble *bubbles, int bubbleCount,
-			   float time) {
+			   float time,
+			   const AquariumUiOptions *options) {
 	float w = (float)GetScreenWidth();
 	float h = (float)GetScreenHeight();
 	EnsureEnvironmentCache(w, h);
@@ -165,6 +236,7 @@ void RenderAll(const Guppy *guppies, int guppyCount,
 	DrawTextureRec(s_environmentCache.texture,
 		(Rectangle){0.0f, 0.0f, (float)s_environmentCache.texture.width, (float)-s_environmentCache.texture.height},
 		(Vector2){0.0f, 0.0f}, WHITE);
+	DrawWaterRefractionOverlay(time);
 
 	DrawSeaweed((Vector2){w * 0.24f, h}, time);
 	DrawSeaweed((Vector2){w * 0.60f, h}, time + 1.0f);
@@ -192,11 +264,14 @@ void RenderAll(const Guppy *guppies, int guppyCount,
 	}
 
 	// Makanan dan bubble dipertahankan di atas scene utama agar tetap terlihat.
-	DrawAllFood(foods, foodCount);
 	DrawAllBubbles(bubbles, bubbleCount);
+	DrawAllFood(foods, foodCount);
+	if (options && options->wireframeEnabled) {
+		DrawWireframeOverlay(guppies, guppyCount, carnivores, carnivoreCount, ultravores, ultravoreCount, foods, foodCount, bubbles, bubbleCount);
+	}
 
 	const Guppy *g0 = FirstActiveGuppy(guppies, guppyCount);
 	const Carnivore *c0 = FirstActiveCarnivore(carnivores, carnivoreCount);
 	const Ultravore *u0 = FirstActiveUltravore(ultravores, ultravoreCount);
-	DrawUI(g0, c0, u0);
+	DrawUI(g0, c0, u0, options);
 }

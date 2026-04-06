@@ -27,7 +27,8 @@ void RenderAll(const Guppy *guppies, int guppyCount,
                const Ultravore *ultravores, int ultravoreCount,
                const Food *foods, int foodCount,
                const Bubble *bubbles, int bubbleCount,
-               float time);
+               float time,
+               const AquariumUiOptions *options);
 
 /* ======================
 Fungsi WarmGameRenderCaches

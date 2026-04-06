@@ -228,7 +228,8 @@ static void DrawIkanCere(const Guppy *g, float animTime) {
     float dir = DirSign(g->dir);
     float rot = (g->state == GUPPY_DEAD) ? -1.0f : 1.0f;
     float scale = g->scale;
-    float sway = (g->state == GUPPY_DEAD) ? 0.0f : sinf(animTime * 4.0f + g->time) * 1.4f;
+    float sway = (g->state == GUPPY_DEAD) ? 0.0f :
+        sinf(animTime * 4.0f + g->time) * 1.4f + cosf(animTime * 2.2f + g->time * 0.4f) * 0.7f;
     float tailLift = (g->state == GUPPY_DEAD) ? 0.0f : g->tailSwing * 0.33f;
     float finLift = (g->state == GUPPY_DEAD) ? 0.0f : g->finSwing * 0.22f;
     float cx = g->pos.x;
@@ -291,7 +292,8 @@ static void DrawIkanLele(const Carnivore *c, float animTime) {
     float dir = DirSign(c->dir);
     float rot = (c->state == CARNIVORE_DEAD) ? -1.0f : 1.0f;
     float scale = c->scale;
-    float sway = (c->state == CARNIVORE_DEAD) ? 0.0f : sinf(animTime * 3.3f + c->time * 0.5f) * 1.6f;
+    float sway = (c->state == CARNIVORE_DEAD) ? 0.0f :
+        sinf(animTime * 3.3f + c->time * 0.5f) * 1.6f + cosf(animTime * 1.7f + c->time * 0.35f) * 0.8f;
     float tailLift = (c->state == CARNIVORE_DEAD) ? 0.0f : c->tailSwing * 0.28f;
     float finLift = (c->state == CARNIVORE_DEAD) ? 0.0f : c->finSwing * 0.18f;
     float cx = c->pos.x;
@@ -360,7 +362,8 @@ static void DrawIkanToman(const Ultravore *u, float animTime) {
     float dir = DirSign(u->dir);
     float rot = (u->state == ULTRA_DEAD) ? -1.0f : 1.0f;
     float scale = u->scale;
-    float sway = (u->state == ULTRA_DEAD) ? 0.0f : sinf(animTime * 2.8f + u->time * 0.44f) * 1.8f;
+    float sway = (u->state == ULTRA_DEAD) ? 0.0f :
+        sinf(animTime * 2.8f + u->time * 0.44f) * 1.8f + cosf(animTime * 1.45f + u->time * 0.32f) * 0.9f;
     float tailLift = (u->state == ULTRA_DEAD) ? 0.0f : u->tailSwing * 0.24f;
     float finLift = (u->state == ULTRA_DEAD) ? 0.0f : u->finSwing * 0.16f;
     float cx = u->pos.x;

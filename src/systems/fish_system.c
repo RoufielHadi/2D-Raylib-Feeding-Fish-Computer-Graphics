@@ -11,6 +11,7 @@ Politeknik Negeri Bandung
 #include "collision.h"
 #include <float.h>
 #include <math.h>
+#include <stddef.h>
 
 /* ======================
 Fungsi VecLen
@@ -66,6 +67,18 @@ Fungsi ini digunakan untuk menjalankan proses VecScale.
 */
 static Vector2 VecScale(Vector2 v, float scale) {
     return (Vector2){v.x * scale, v.y * scale};
+}
+
+/* ======================
+Fungsi HeadingFromVelocity
+=======================
+Fungsi ini digunakan untuk mengambil heading dari velocity.
+*/
+static Vector2 HeadingFromVelocity(Vector2 vel, float fallbackDir) {
+    if (VecLen(vel) <= 0.001f) {
+        return (Vector2){fallbackDir >= 0.0f ? 1.0f : -1.0f, 0.0f};
+    }
+    return VecNorm(vel);
 }
 
 /* ======================
@@ -235,6 +248,66 @@ static Vector2 SeparationForceUltravore(const Ultravore *self, const Ultravore *
 }
 
 /* ======================
+Fungsi AlignmentForceGuppy
+=======================
+Fungsi ini digunakan untuk menyelaraskan arah ikan cere.
+*/
+static Vector2 AlignmentForceGuppy(const Guppy *self, const Guppy *guppies, int count, float desiredSpeed) {
+    float nearest = FLT_MAX;
+    const Guppy *neighbor = NULL;
+    for (int i = 0; i < count; i++) {
+        if (&guppies[i] == self || !guppies[i].active || guppies[i].state == GUPPY_DEAD) continue;
+        float dist = DistanceBetween(self->pos, guppies[i].pos);
+        if (dist < nearest) {
+            nearest = dist;
+            neighbor = &guppies[i];
+        }
+    }
+    if (!neighbor || nearest > 150.0f) return (Vector2){0.0f, 0.0f};
+    return VecScale(HeadingFromVelocity(neighbor->vel, neighbor->dir), desiredSpeed * 0.32f);
+}
+
+/* ======================
+Fungsi AlignmentForceCarnivore
+=======================
+Fungsi ini digunakan untuk menyelaraskan arah ikan lele.
+*/
+static Vector2 AlignmentForceCarnivore(const Carnivore *self, const Carnivore *arr, int count, float desiredSpeed) {
+    float nearest = FLT_MAX;
+    const Carnivore *neighbor = NULL;
+    for (int i = 0; i < count; i++) {
+        if (&arr[i] == self || !arr[i].active || arr[i].state == CARNIVORE_DEAD) continue;
+        float dist = DistanceBetween(self->pos, arr[i].pos);
+        if (dist < nearest) {
+            nearest = dist;
+            neighbor = &arr[i];
+        }
+    }
+    if (!neighbor || nearest > 190.0f) return (Vector2){0.0f, 0.0f};
+    return VecScale(HeadingFromVelocity(neighbor->vel, neighbor->dir), desiredSpeed * 0.28f);
+}
+
+/* ======================
+Fungsi AlignmentForceUltravore
+=======================
+Fungsi ini digunakan untuk menyelaraskan arah ikan toman.
+*/
+static Vector2 AlignmentForceUltravore(const Ultravore *self, const Ultravore *arr, int count, float desiredSpeed) {
+    float nearest = FLT_MAX;
+    const Ultravore *neighbor = NULL;
+    for (int i = 0; i < count; i++) {
+        if (&arr[i] == self || !arr[i].active || arr[i].state == ULTRA_DEAD) continue;
+        float dist = DistanceBetween(self->pos, arr[i].pos);
+        if (dist < nearest) {
+            nearest = dist;
+            neighbor = &arr[i];
+        }
+    }
+    if (!neighbor || nearest > 230.0f) return (Vector2){0.0f, 0.0f};
+    return VecScale(HeadingFromVelocity(neighbor->vel, neighbor->dir), desiredSpeed * 0.24f);
+}
+
+/* ======================
 Fungsi UpdateGuppies
 =======================
 Fungsi ini digunakan untuk memperbarui guppies.
@@ -324,6 +397,8 @@ void UpdateGuppies(Guppy *guppies, int guppyCount, Food *foods, int foodCount, f
             Vector2 dir = VecNorm(toFood);
             float speed = (g->state == GUPPY_HUNGRY) ? speedHungry : speedNormal;
             targetVel = VecScale(dir, speed);
+            targetVel.y += cosf(g->time * 2.8f + (float)i * 0.8f) * 7.0f;
+            targetVel = VecAdd(targetVel, AlignmentForceGuppy(g, guppies, guppyCount, speed));
             targetVel = VecAdd(targetVel, SeparationForceGuppy(g, guppies, guppyCount));
             AvoidWalls(g->pos, &targetVel, 35.0f);
             g->vel = LerpVec(g->vel, targetVel, steerLerp);
@@ -347,7 +422,8 @@ void UpdateGuppies(Guppy *guppies, int guppyCount, Food *foods, int foodCount, f
             Vector2 dir = VecNorm(toTarget);
             float cruise = speedNormal * (0.55f + 0.18f * sinf(g->time * 0.8f + (float)i));
             targetVel = VecScale(dir, cruise);
-            targetVel.y += sinf(g->time * 2.0f + (float)i) * 12.0f;
+            targetVel.y += sinf(g->time * 2.0f + (float)i) * 12.0f + cosf(g->time * 1.3f + (float)i) * 6.0f;
+            targetVel = VecAdd(targetVel, AlignmentForceGuppy(g, guppies, guppyCount, cruise));
             targetVel = VecAdd(targetVel, SeparationForceGuppy(g, guppies, guppyCount));
             AvoidWalls(g->pos, &targetVel, 40.0f);
             g->vel = LerpVec(g->vel, targetVel, 0.06f);
@@ -432,6 +508,8 @@ void UpdateCarnivores(Carnivore *carnivores, int carnivoreCount, Guppy *guppies,
             Vector2 dir = VecNorm(toTarget);
             float speed = (c->state == CARNIVORE_HUNGRY) ? speedHungry : speedNormal;
             targetVel = VecScale(dir, speed);
+            targetVel.y += cosf(c->time * 1.9f + (float)i) * 6.0f;
+            targetVel = VecAdd(targetVel, AlignmentForceCarnivore(c, carnivores, carnivoreCount, speed));
             targetVel = VecAdd(targetVel, SeparationForceCarnivore(c, carnivores, carnivoreCount));
             AvoidWalls(c->pos, &targetVel, 42.0f);
             c->vel = LerpVec(c->vel, targetVel, steerLerp);
@@ -452,7 +530,8 @@ void UpdateCarnivores(Carnivore *carnivores, int carnivoreCount, Guppy *guppies,
             Vector2 dir = VecNorm(toTarget);
             float cruise = speedNormal * (0.65f + 0.12f * cosf(c->time * 0.9f + i));
             targetVel = VecScale(dir, cruise);
-            targetVel.y += sinf(c->time * 1.6f + (float)i) * 10.0f;
+            targetVel.y += sinf(c->time * 1.6f + (float)i) * 10.0f + cosf(c->time * 1.2f + (float)i) * 5.0f;
+            targetVel = VecAdd(targetVel, AlignmentForceCarnivore(c, carnivores, carnivoreCount, cruise));
             targetVel = VecAdd(targetVel, SeparationForceCarnivore(c, carnivores, carnivoreCount));
             AvoidWalls(c->pos, &targetVel, 45.0f);
             c->vel = LerpVec(c->vel, targetVel, 0.07f);
@@ -537,6 +616,8 @@ void UpdateUltravoids(Ultravore *ultravoids, int ultravoreCount, Carnivore *carn
             Vector2 dir = VecNorm(toTarget);
             float speed = (u->state == ULTRA_HUNGRY) ? speedHungry : speedNormal;
             targetVel = VecScale(dir, speed);
+            targetVel.y += cosf(u->time * 1.5f + (float)i) * 5.0f;
+            targetVel = VecAdd(targetVel, AlignmentForceUltravore(u, ultravoids, ultravoreCount, speed));
             targetVel = VecAdd(targetVel, SeparationForceUltravore(u, ultravoids, ultravoreCount));
             AvoidWalls(u->pos, &targetVel, 48.0f);
             u->vel = LerpVec(u->vel, targetVel, steerLerp);
@@ -557,7 +638,8 @@ void UpdateUltravoids(Ultravore *ultravoids, int ultravoreCount, Carnivore *carn
             Vector2 dir = VecNorm(toTarget);
             float cruise = speedNormal * (0.72f + 0.10f * sinf(u->time * 0.7f + i));
             targetVel = VecScale(dir, cruise);
-            targetVel.y += sinf(u->time * 1.3f + (float)i) * 8.0f;
+            targetVel.y += sinf(u->time * 1.3f + (float)i) * 8.0f + cosf(u->time * 1.0f + (float)i) * 4.0f;
+            targetVel = VecAdd(targetVel, AlignmentForceUltravore(u, ultravoids, ultravoreCount, cruise));
             targetVel = VecAdd(targetVel, SeparationForceUltravore(u, ultravoids, ultravoreCount));
             AvoidWalls(u->pos, &targetVel, 52.0f);
             u->vel = LerpVec(u->vel, targetVel, 0.07f);

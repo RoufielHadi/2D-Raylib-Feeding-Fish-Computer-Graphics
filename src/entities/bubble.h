@@ -24,6 +24,9 @@ typedef struct {
 
     float radius;
     float time;
+    float driftAmplitude;
+    float driftFrequency;
+    float speedScale;
 
     float alpha;
     bool active;
