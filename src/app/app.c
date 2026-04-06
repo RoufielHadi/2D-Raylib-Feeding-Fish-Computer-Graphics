@@ -424,6 +424,7 @@ int App_Run(void) {
     // Inisialisasi window dan aset utama aplikasi.
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
     InitWindow(kScreenWidth, kScreenHeight, "Feeding Fish");
+    //set target fps bawaan dari leptop
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
     page = Menu_CreateScrollableLayout();

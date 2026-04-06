@@ -15,12 +15,25 @@ Politeknik Negeri Bandung
 #include "../entities/lele.h"
 #include "../entities/toman.h"
 
+typedef enum {
+    BUBBLE_CTRL_CALM = 0,
+    BUBBLE_CTRL_NORMAL,
+    BUBBLE_CTRL_TURBO
+} BubbleControlMode;
+
+typedef struct {
+    bool autoSpeedEnabled;
+    bool wireframeEnabled;
+    BubbleControlMode bubbleMode;
+    float simSpeed;
+} AquariumUiOptions;
+
 /* ======================
 Fungsi DrawUI
 =======================
 Fungsi ini digunakan untuk menggambar ui.
 */
-void DrawUI(const Guppy *g, const Carnivore *c, const Ultravore *u);
+void DrawUI(const Guppy *g, const Carnivore *c, const Ultravore *u, const AquariumUiOptions *options);
 
 /* ======================
 Fungsi WarmHeaderUICache

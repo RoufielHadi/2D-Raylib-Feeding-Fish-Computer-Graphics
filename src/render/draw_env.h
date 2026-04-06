@@ -41,6 +41,21 @@ Fungsi ini digunakan untuk menggambar seaweed.
 void DrawSeaweed(Vector2 pos, float time);
 
 /* ======================
+Fungsi DrawSeaweedClusterRect
+=======================
+Fungsi ini digunakan untuk menggambar cluster rumput laut bergaya game
+di dalam area tertentu.
+*/
+void DrawSeaweedClusterRect(Rectangle area, float time, int variant, bool withBubbles, bool drawSand);
+
+/* ======================
+Fungsi DrawWaterRefractionOverlay
+=======================
+Fungsi ini digunakan untuk menggambar refraksi cahaya air.
+*/
+void DrawWaterRefractionOverlay(float time);
+
+/* ======================
 Fungsi DrawCoral
 =======================
 Fungsi ini digunakan untuk menggambar coral.

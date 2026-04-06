@@ -18,6 +18,9 @@ typedef enum {
     UI_BTN_ADD_CARNIVORE,
     UI_BTN_ADD_ULTRAVORE,
     UI_BTN_RESET,
+    UI_BTN_BUBBLE,
+    UI_BTN_AUTOSPEED,
+    UI_BTN_WIREFRAME,
     UI_BTN_VOLUME,
     UI_BTN_BACK
 } UIButtonId;
@@ -27,7 +30,7 @@ Fungsi UI_GetButtonRects
 =======================
 Fungsi ini digunakan untuk mengambil button rects.
 */
-void UI_GetButtonRects(Rectangle outRects[6]);
+void UI_GetButtonRects(Rectangle outRects[9]);
 
 /* ======================
 Fungsi UI_HitTest

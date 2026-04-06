@@ -24,21 +24,64 @@ static RenderTexture2D s_seaweedFrames[kSeaweedFrameCount] = {0};
 static unsigned char s_seaweedFrameReady[kSeaweedFrameCount] = {0};
 
 /* ======================
+Fungsi DrawSeaweedAccentBubble
+=======================
+Fungsi ini digunakan untuk menggambar bubble aksen di sekitar seaweed.
+*/
+static void DrawSeaweedAccentBubble(Vector2 center, float radius, float alpha) {
+	DrawCircleV(center, radius, ColorAlpha((Color){180, 220, 255, 255}, alpha * 0.55f));
+	DrawCircleLines((int)center.x, (int)center.y, radius, ColorAlpha((Color){239, 249, 255, 255}, alpha));
+	DrawCircleLines((int)center.x, (int)center.y, radius - 2.0f, ColorAlpha((Color){150, 212, 245, 255}, alpha * 0.72f));
+	DrawCircleV((Vector2){center.x - radius * 0.24f, center.y - radius * 0.20f}, radius * 0.18f,
+		ColorAlpha(WHITE, alpha * 0.92f));
+}
+
+/* ======================
+Fungsi DrawSeaweedFrond
+=======================
+Fungsi ini digunakan untuk menggambar satu helai rumput laut.
+*/
+static void DrawSeaweedFrond(Vector2 root, float height, float thickness, float time,
+	float phase, float lean, float tipLift, bool withLeaf,
+	Color baseColor, Color midColor, Color tipColor) {
+	float sway = sinf(time * 1.7f + phase) * (10.0f + thickness * 1.35f)
+		+ cosf(time * 1.15f + phase * 0.7f) * 3.4f;
+	Vector2 a = root;
+	Vector2 b = {root.x + sway * 0.24f + lean * 0.14f, root.y - height * 0.28f};
+	Vector2 c = {root.x + sway * 0.56f + lean * 0.46f, root.y - height * 0.60f};
+	Vector2 d = {root.x + sway + lean, root.y - height - tipLift};
+
+	DrawLineBezier(a, b, thickness, baseColor);
+	DrawLineBezier(b, c, fmaxf(1.4f, thickness - 0.9f), midColor);
+	DrawLineBezier(c, d, fmaxf(1.1f, thickness - 1.8f), tipColor);
+	DrawCircleV(c, fmaxf(2.0f, thickness * 0.70f), ColorAlpha((Color){84, 196, 136, 255}, 0.28f));
+
+	if (!withLeaf) return;
+
+	Vector2 leafA = {root.x + sway * 0.34f + lean * 0.22f, root.y - height * 0.46f};
+	Vector2 leafB = {leafA.x + sway * 0.18f + 8.0f, leafA.y - height * 0.14f};
+	DrawLineBezier(leafA, leafB, fmaxf(1.0f, thickness - 2.1f), ColorAlpha(tipColor, 0.82f));
+}
+
+/* ======================
 Fungsi DrawSeaweedGenerated
 =======================
 Fungsi ini digunakan untuk menggambar seaweed generated.
 */
 static void DrawSeaweedGenerated(Vector2 pos, float time) {
 	for (int i = 0; i < 5; i++) {
-		float sway = sinf(time * 1.7f + i * 0.8f) * (10.0f + i * 1.5f);
-		Vector2 a = { pos.x + i * 12.0f, pos.y };
-		Vector2 b = { pos.x + i * 12.0f + sway * 0.35f, pos.y - 28 };
-		Vector2 c = { pos.x + i * 10.0f + sway * 0.7f, pos.y - 58 };
-		Vector2 d = { pos.x + i * 8.0f + sway, pos.y - (88 + (i % 2) * 14) };
-		DrawLineBezier(a, b, 5.0f, (Color){30, 124, 90, 255});
-		DrawLineBezier(b, c, 4.0f, (Color){38, 144, 96, 255});
-		DrawLineBezier(c, d, 3.0f, (Color){45, 166, 110, 255});
-		DrawCircleV(c, 3.0f, (Color){84, 196, 136, 70});
+		DrawSeaweedFrond(
+			(Vector2){pos.x + i * 12.0f, pos.y},
+			88.0f + (float)(i % 2) * 14.0f,
+			5.0f - i * 0.35f,
+			time,
+			i * 0.8f,
+			-4.0f + i * 1.4f,
+			(float)((i + 1) % 2) * 4.0f,
+			(i % 2) == 0,
+			(Color){30, 124, 90, 255},
+			(Color){38, 144, 96, 255},
+			(Color){45, 166, 110, 255});
 	}
 }
 
@@ -161,6 +204,84 @@ void DrawSeaweed(Vector2 pos, float time) {
 		(Rectangle){0.0f, 0.0f, (float)kSeaweedSpriteW, (float)-kSeaweedSpriteH},
 		(Vector2){pos.x - kSeaweedAnchorX, pos.y - kSeaweedAnchorY},
 		WHITE);
+}
+
+/* ======================
+Fungsi DrawSeaweedClusterRect
+=======================
+Fungsi ini digunakan untuk menggambar cluster rumput laut bergaya game
+di dalam area tertentu.
+*/
+void DrawSeaweedClusterRect(Rectangle area, float time, int variant, bool withBubbles, bool drawSand) {
+	float sandHeight = area.height * 0.18f;
+	float baseY = area.y + area.height - 4.0f;
+	int frondCount = 6 + (variant & 1);
+	float rootMinX = area.x + 18.0f;
+	float rootMaxX = area.x + area.width - 20.0f;
+
+	if (drawSand) {
+		DrawRectangleGradientV((int)area.x, (int)(area.y + area.height - sandHeight), (int)area.width, (int)sandHeight,
+			(Color){204, 181, 118, 220}, (Color){162, 135, 86, 220});
+	}
+
+	for (int i = 0; i < frondCount; i++) {
+		float lane = (frondCount <= 1) ? 0.5f : (float)i / (float)(frondCount - 1);
+		float rootX = rootMinX + lane * (rootMaxX - rootMinX);
+		float height = area.height * (0.44f + (float)((i + variant) % 3) * 0.09f);
+		float thickness = 4.8f - lane * 1.6f;
+		float lean = -6.0f + lane * 12.0f + sinf(variant * 0.7f + i * 0.45f) * 3.0f;
+		unsigned char tint = (unsigned char)(i * 5);
+
+		DrawSeaweedFrond(
+			(Vector2){rootX, baseY},
+			height,
+			thickness,
+			time,
+			i * 0.72f + variant * 0.55f,
+			lean,
+			(float)((i + variant) % 2) * (area.height * 0.03f),
+			((i + variant) % 2) == 0,
+			(Color){30, (unsigned char)(124 + tint), (unsigned char)(90 + tint / 2), 255},
+			(Color){38, (unsigned char)(144 + tint), (unsigned char)(96 + tint / 2), 255},
+			(Color){45, (unsigned char)(166 + tint), (unsigned char)(110 + tint / 2), 255});
+	}
+
+	if (!withBubbles) return;
+
+	for (int i = 0; i < 5; i++) {
+		float phase = time * 0.6f + i * 0.85f + variant;
+		Vector2 bubblePos = {
+			area.x + area.width * (0.18f + (float)(i % 3) * 0.23f) + sinf(phase) * 6.0f,
+			area.y + area.height * (0.66f - i * 0.10f) + cosf(phase * 1.1f) * 4.0f
+		};
+		DrawSeaweedAccentBubble(bubblePos, 4.0f + (float)(i % 2) * 2.5f, 0.38f + i * 0.08f);
+	}
+}
+
+/* ======================
+Fungsi DrawWaterRefractionOverlay
+=======================
+Fungsi ini digunakan untuk menggambar refraksi cahaya air.
+*/
+void DrawWaterRefractionOverlay(float time) {
+	float w = (float)GetScreenWidth();
+	float h = (float)GetScreenHeight() - 86.0f;
+
+	for (int i = 0; i < 10; i++) {
+		float phase = time * (0.22f + i * 0.015f) + i * 0.9f;
+		float y = 136.0f + i * 64.0f + sinf(phase) * 18.0f;
+		float x = w * (0.10f + i * 0.085f) + cosf(phase * 0.8f) * 40.0f;
+		float length = 120.0f + sinf(phase * 1.3f) * 34.0f;
+		DrawLineEx((Vector2){x - length * 0.5f, y}, (Vector2){x + length * 0.5f, y + sinf(phase * 1.7f) * 5.0f},
+			1.2f, ColorAlpha((Color){241, 250, 255, 255}, 0.08f));
+	}
+
+	for (int i = 0; i < 20; i++) {
+		float phase = time * 0.16f + i * 1.2f;
+		float x = w * (0.06f + (float)(i % 10) * 0.09f) + sinf(phase * 1.1f) * 14.0f;
+		float y = 150.0f + (float)(i / 10) * (h * 0.35f) + cosf(phase * 0.9f) * 20.0f;
+		DrawCircleV((Vector2){x, y}, 1.2f + 0.4f * sinf(phase), ColorAlpha((Color){229, 243, 255, 255}, 0.10f));
+	}
 }
 
 /* ======================

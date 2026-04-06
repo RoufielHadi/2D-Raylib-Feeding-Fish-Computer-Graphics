@@ -28,7 +28,7 @@ Politeknik Negeri Bandung
 #define MAX_CARNIVORES 2
 #define MAX_ULTRAVORES 1
 #define MAX_FOOD 6
-#define MAX_BUBBLES 24
+#define MAX_BUBBLES 36
 
 /* ======================
 Fungsi Dist
@@ -51,6 +51,17 @@ static float LerpValue(float a, float b, float t) {
 }
 
 /* ======================
+Fungsi ClampValue
+=======================
+Fungsi ini digunakan untuk membatasi nilai float.
+*/
+static float ClampValue(float value, float minValue, float maxValue) {
+    if (value < minValue) return minValue;
+    if (value > maxValue) return maxValue;
+    return value;
+}
+
+/* ======================
 Fungsi IsPointInsideAquarium
 =======================
 Fungsi ini digunakan untuk memeriksa point inside aquarium.
@@ -63,6 +74,84 @@ static bool IsPointInsideAquarium(Vector2 point) {
         (float)GetScreenHeight() - 200.0f
     };
     return CheckCollisionPointRec(point, aquariumArea);
+}
+
+/* ======================
+Fungsi CountActiveFood
+=======================
+Fungsi ini digunakan untuk menghitung pelet aktif.
+*/
+static int CountActiveFood(const Food *foods, int count) {
+    int active = 0;
+    for (int i = 0; i < count; i++) {
+        if (foods[i].active) active++;
+    }
+    return active;
+}
+
+/* ======================
+Fungsi ComputeAutoSpeedTarget
+=======================
+Fungsi ini digunakan untuk menghitung target autospeed.
+*/
+static float ComputeAutoSpeedTarget(const Guppy *guppies, int guppyCount,
+    const Carnivore *carnivores, int carnivoreCount,
+    const Ultravore *ultravoids, int ultravoreCount,
+    const Food *foods, int foodCount) {
+    float pressure = 0.0f;
+    int activeFish = 0;
+
+    for (int i = 0; i < guppyCount; i++) {
+        if (!guppies[i].active) continue;
+        pressure += ClampValue(guppies[i].hunger / 10.0f, 0.0f, 1.0f);
+        activeFish++;
+    }
+    for (int i = 0; i < carnivoreCount; i++) {
+        if (!carnivores[i].active) continue;
+        pressure += ClampValue(carnivores[i].hunger / 20.0f, 0.0f, 1.0f);
+        activeFish++;
+    }
+    for (int i = 0; i < ultravoreCount; i++) {
+        if (!ultravoids[i].active) continue;
+        pressure += ClampValue(ultravoids[i].hunger / 30.0f, 0.0f, 1.0f);
+        activeFish++;
+    }
+
+    float hungerPressure = (activeFish > 0) ? pressure / (float)activeFish : 0.0f;
+    float foodPressure = (float)CountActiveFood(foods, foodCount) / (float)((foodCount > 0) ? foodCount : 1);
+    float target = 1.0f + hungerPressure * 0.90f + foodPressure * 0.35f + activeFish * 0.03f;
+    return ClampValue(target, 1.0f, 1.85f);
+}
+
+/* ======================
+Fungsi NextBubbleMode
+=======================
+Fungsi ini digunakan untuk mengambil mode bubble berikutnya.
+*/
+static BubbleControlMode NextBubbleMode(BubbleControlMode mode) {
+    return (BubbleControlMode)(((int)mode + 1) % 3);
+}
+
+/* ======================
+Fungsi GetBubbleSpawnChance
+=======================
+Fungsi ini digunakan untuk mengambil peluang spawn bubble.
+*/
+static int GetBubbleSpawnChance(BubbleControlMode mode) {
+    if (mode == BUBBLE_CTRL_CALM) return 1;
+    if (mode == BUBBLE_CTRL_TURBO) return 6;
+    return 3;
+}
+
+/* ======================
+Fungsi GetBubbleSpeedMultiplier
+=======================
+Fungsi ini digunakan untuk mengambil pengali bubble.
+*/
+static float GetBubbleSpeedMultiplier(BubbleControlMode mode) {
+    if (mode == BUBBLE_CTRL_CALM) return 0.70f;
+    if (mode == BUBBLE_CTRL_TURBO) return 1.38f;
+    return 1.0f;
 }
 
 /* ======================
@@ -213,6 +302,7 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
     Food foods[MAX_FOOD];
     Bubble bubbles[MAX_BUBBLES];
     float time = 0.0f;
+    AquariumUiOptions uiOptions = {true, false, BUBBLE_CTRL_NORMAL, 1.0f};
     bool audioReady = false;
     bool hasBgm = false;
     Music bgm = {0};
@@ -233,7 +323,6 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
-        time += dt;
         bool leftClick = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
         bool rightClick = IsMouseButtonPressed(MOUSE_RIGHT_BUTTON);
 
@@ -241,6 +330,9 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
             ShutdownGameAudio(audioReady, hasBgm, bgm);
             return GAME_SESSION_RETURN_HOME;
         }
+        if (IsKeyPressed(KEY_A)) uiOptions.autoSpeedEnabled = !uiOptions.autoSpeedEnabled;
+        if (IsKeyPressed(KEY_W)) uiOptions.wireframeEnabled = !uiOptions.wireframeEnabled;
+        if (IsKeyPressed(KEY_B)) uiOptions.bubbleMode = NextBubbleMode(uiOptions.bubbleMode);
 
         if (leftClick || rightClick) {
             Vector2 mp = GetMousePosition();
@@ -281,6 +373,12 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
                 }
             } else if (bid == UI_BTN_RESET) {
                 ResetAquarium(guppies, carnivores, ultravoids, foods, bubbles);
+            } else if (bid == UI_BTN_BUBBLE) {
+                uiOptions.bubbleMode = NextBubbleMode(uiOptions.bubbleMode);
+            } else if (bid == UI_BTN_AUTOSPEED) {
+                uiOptions.autoSpeedEnabled = !uiOptions.autoSpeedEnabled;
+            } else if (bid == UI_BTN_WIREFRAME) {
+                uiOptions.wireframeEnabled = !uiOptions.wireframeEnabled;
             } else if (bid == UI_BTN_VOLUME) {
                 UI_ToggleVolume();
             } else if (bid == UI_BTN_NONE && IsPointInsideAquarium(mp)) {
@@ -299,7 +397,14 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
             UI_HandleVolumeClick(GetMousePosition());
         }
 
-        if (GetRandomValue(0, 100) < 3) {
+        float targetSpeed = uiOptions.autoSpeedEnabled
+            ? ComputeAutoSpeedTarget(guppies, MAX_GUPPIES, carnivores, MAX_CARNIVORES, ultravoids, MAX_ULTRAVORES, foods, MAX_FOOD)
+            : 1.0f;
+        uiOptions.simSpeed = LerpValue(uiOptions.simSpeed, targetSpeed, uiOptions.autoSpeedEnabled ? 0.08f : 0.18f);
+        float simDt = dt * uiOptions.simSpeed;
+        time += simDt;
+
+        if (GetRandomValue(0, 100) < GetBubbleSpawnChance(uiOptions.bubbleMode)) {
             for (int i = 0; i < MAX_BUBBLES; i++) {
                 if (!bubbles[i].active) {
                     InitBubble(&bubbles[i], (Vector2){
@@ -311,19 +416,20 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
             }
         }
 
-        UpdateFoodSystem(foods, MAX_FOOD, dt);
-        UpdateGuppies(guppies, MAX_GUPPIES, foods, MAX_FOOD, dt);
-        UpdateCarnivores(carnivores, MAX_CARNIVORES, guppies, MAX_GUPPIES, dt);
-        UpdateUltravoids(ultravoids, MAX_ULTRAVORES, carnivores, MAX_CARNIVORES, dt);
+        UpdateFoodSystem(foods, MAX_FOOD, simDt);
+        UpdateGuppies(guppies, MAX_GUPPIES, foods, MAX_FOOD, simDt);
+        UpdateCarnivores(carnivores, MAX_CARNIVORES, guppies, MAX_GUPPIES, simDt);
+        UpdateUltravoids(ultravoids, MAX_ULTRAVORES, carnivores, MAX_CARNIVORES, simDt);
 
         for (int i = 0; i < MAX_BUBBLES; i++) {
             Bubble *bubble = &bubbles[i];
             if (!bubble->active) continue;
 
-            bubble->time += dt;
-            bubble->pos.y += bubble->vel.y * dt;
-            bubble->pos.x += sinf(bubble->time * 2.0f + (float)i) * 8.0f * dt;
-            bubble->alpha -= 20.0f * dt;
+            float bubbleSpeed = GetBubbleSpeedMultiplier(uiOptions.bubbleMode) * bubble->speedScale;
+            bubble->time += simDt;
+            bubble->pos.y += bubble->vel.y * bubbleSpeed * simDt;
+            bubble->pos.x += sinf(bubble->time * bubble->driftFrequency + (float)i) * bubble->driftAmplitude * simDt;
+            bubble->alpha -= (14.0f + bubble->radius * 0.6f) * simDt;
             if (bubble->alpha < 30.0f) bubble->alpha = 30.0f;
             if (bubble->pos.y + bubble->radius < -10.0f) {
                 bubble->active = false;
@@ -343,7 +449,8 @@ GameSessionResult RunGameSession(Font uiFont, bool hasCustomFont) {
             ultravoids, MAX_ULTRAVORES,
             foods, MAX_FOOD,
             bubbles, MAX_BUBBLES,
-            time);
+            time,
+            &uiOptions);
         EndDrawing();
     }
 
